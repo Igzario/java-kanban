@@ -1,17 +1,13 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-
 public class Manager {
 
-
     private HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskHashMap= new HashMap<>();
-    private HashMap<Integer, Task> taskHashMap= new HashMap<>();
+    private HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    private HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private int idTask = 1;
     private int idSubTask = 1;
     private int idEpic = 1;
-
-
 
     public HashMap<Integer, Epic> getEpicHashMap() {
         return epicHashMap;
@@ -27,13 +23,10 @@ public class Manager {
 
     public Task newTask(String name, String opisanie) {
         Task task = new Task(idTask, name, opisanie);
-
         taskHashMap.put(idTask, task);
         idTask++;
         return task;
-
     }
-
 
     public Epic newEpic(String name, String opisanie) {
         Epic epic = new Epic(idEpic, name, opisanie);
@@ -42,10 +35,7 @@ public class Manager {
         return epic;
     }
 
-
-
     public Subtask newSubTask(String name, String opisanie, int idEpicSearch) {
-
         Subtask subtask = new Subtask(idSubTask, name, opisanie, idEpicSearch);
         subtaskHashMap.put(idSubTask, subtask);
         searchEpicForId(idEpicSearch).podZadachi.add(subtask);
@@ -65,7 +55,6 @@ public class Manager {
     Task searchSubtaskForId(int idSubtaskSearch) {
         return subtaskHashMap.get(idSubtaskSearch);
     }
-
 
     public void clearEpic() {
         epicHashMap.clear();
@@ -88,7 +77,6 @@ public class Manager {
         epicHashMap.get(newSubtask.idEpic).podZadachi.add(newSubtask);
         subtaskHashMap.put(newSubtask.id, newSubtask);
         epicHashMap.get(newSubtask.idEpic).refreshStatus();
-
     }
 
     public void refreshEpic(Epic newEpic) {
@@ -103,7 +91,7 @@ public class Manager {
 
     public void deleteSubTaskForId(int idDelete) {
         epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).podZadachi.remove(subtaskHashMap.get(idDelete));
-                epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
+        epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
         subtaskHashMap.remove(idDelete);
     }
 
@@ -114,34 +102,24 @@ public class Manager {
         epicHashMap.remove(idDelete);
     }
 
-    public ArrayList getSubTasksForEpicId (int idEpic){
-       return epicHashMap.get(idEpic).podZadachi;
-
+    public ArrayList getSubTasksForEpicId(int idEpic) {
+        return epicHashMap.get(idEpic).podZadachi;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         String result = "\n\nСписок задач:";
-
-        for (Task task : taskHashMap.values()){
-          result= result +"\nID - " + task.id + ", Название - "+ task.name+ ", Статус - "+task.status;
+        for (Task task : taskHashMap.values()) {
+            result = result + "\nID - " + task.id + ", Название - " + task.name + ", Статус - " + task.status;
         }
-
-
-         result = result + "\n\nСписок Эпиков и подзадач: " ;
-
-            for(Epic epic : epicHashMap.values()){
-                result=result+"\n=========================================";
-                result=result + "\nID - " + epic.id + ", Название - " + epic.name +", Статус - "+epic.status+ "\nПодзадачи:";
-                    for (Subtask subtask : epic.podZadachi){
-                        result=result + "\nID - " + subtask.id + ", Название - " + subtask.name+", Статус - "+subtask.status;
-
-                    }
-
-
+        result = result + "\n\nСписок Эпиков и подзадач: ";
+        for (Epic epic : epicHashMap.values()) {
+            result = result + "\n=========================================";
+            result = result + "\nID - " + epic.id + ", Название - " + epic.name + ", Статус - " + epic.status + "\nПодзадачи:";
+            for (Subtask subtask : epic.podZadachi) {
+                result = result + "\nID - " + subtask.id + ", Название - " + subtask.name + ", Статус - " + subtask.status;
             }
-
-return result;
+        }
+        return result;
     }
-
 }

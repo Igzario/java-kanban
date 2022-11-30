@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    public ArrayList<Subtask> podZadachi;
+    protected ArrayList<Subtask> podZadachi;
 
     public Epic(int id, String name, String opisanie) {
         super(id, name, opisanie);
@@ -13,29 +13,27 @@ public class Epic extends Task {
         int schetDone = 0;
         int schetProgress = 0;
 
-        if (this.podZadachi.isEmpty()) {
-            this.status = "NEW";
-        }
+
 
         for (Subtask o : this.podZadachi) {
 
-            if (o.status.equals("NEW")) {
+            if (o.status==Status.NEW) {
                 schetNew++;
             }
-            if (o.status.equals("DONE")) {
+            if (o.status==Status.DONE) {
                 schetDone++;
             }
-            if (o.status.equals("IN_PROGRESS")) {
+            if (o.status==Status.IN_PROGRESS) {
                 schetProgress++;
             }
         }
 
         if (schetDone == 0 && schetProgress == 0 && schetNew > 0) {
-            this.status = "NEW";
+            this.status = Status.NEW;
         } else if (schetDone > 0 && schetProgress == 0 && schetNew == 0) {
-            this.status = "DONE";
+            this.status = Status.DONE;
         } else {
-            this.status = "IN_PROGRESS";
+            this.status = Status.IN_PROGRESS;
         }
     }
 }
