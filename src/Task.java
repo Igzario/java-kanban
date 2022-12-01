@@ -12,5 +12,11 @@ public class Task {
         this.status = Status.NEW;
     }
 
-
+    @Override
+    public String toString() {
+        return  "ID - " + id +
+                ", Название - " + name + '\'' +
+                ", Описание  - " + opisanie + '\'' +
+                ", Статус - " + status;
+    }
 }

@@ -68,8 +68,8 @@ public class Manager {
         subtaskHashMap.clear();
     }
 
-    public void refreshTask(Task newTask, int id) {
-        taskHashMap.put(id, newTask);
+    public void refreshTask(Task newTask) {
+        taskHashMap.put(newTask.id, newTask);
     }
 
     public void refreshSubTask(Subtask newSubtask) {
@@ -94,7 +94,6 @@ public class Manager {
         epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
         subtaskHashMap.remove(idDelete);
     }
-
     public void deleteEpicForId(int idDelete) {
         for (Subtask subtask : epicHashMap.get(idDelete).podZadachi) {
             subtaskHashMap.remove(subtask);

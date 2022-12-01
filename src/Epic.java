@@ -13,10 +13,7 @@ public class Epic extends Task {
         int schetDone = 0;
         int schetProgress = 0;
 
-
-
         for (Subtask o : this.podZadachi) {
-
             if (o.status==Status.NEW) {
                 schetNew++;
             }
@@ -27,7 +24,6 @@ public class Epic extends Task {
                 schetProgress++;
             }
         }
-
         if (schetDone == 0 && schetProgress == 0 && schetNew > 0) {
             this.status = Status.NEW;
         } else if (schetDone > 0 && schetProgress == 0 && schetNew == 0) {
