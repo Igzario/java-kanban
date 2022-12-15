@@ -1,29 +1,10 @@
-//Не очищает список эпиков. - список очищается
-//Не очищает список подзадач. - работало не корректно, удаляло не все, поправил
 
-// Выдает ошибку NullPointerException, скорее всего где-то некорректная логика - логика правильная, нет проверки на ввод
-// id которого нет - исправил в 3методах удаления по ид
-//
-//При выводе списка теряется описание. - по условию описание нас не интересует
-
-// Вот так закрывающиеся скобки не рекомендуется прописывать. Это затрудняет чтение кода. - ок)
-
-//При выборе этого пункта временами (начиная со 2го раза) выводится: - это какой-то прикол с сканнером, было такое с
-//печатью меню, решил добавлением еще одного сканера и перенес его создание внутрь цикла
-
-//Нет проверки на то, что пользователь может ввести номер не существующего эпика - исправил
-
-//Что должно быть вместо XXX разберись самостоятельно:) - а, все, понял, тупанул)
-
-//Почему не понятно? Как раз все понятно) - сделал, добавил проверку
-
-//Зачем прописываешь '''?  - это прописывал генератор, я его правил, сейча сделал получше
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        InMemoryTaskManager manager = new InMemoryTaskManager();
         Scanner scanner = new Scanner(System.in);
 
 
@@ -145,6 +126,7 @@ public class Main {
                         continue;
                     } else {
                         System.out.println("Такой задачи нет");
+                        continue;
                     }
                 case 7:
                     System.out.println("Введите ID задачи");
@@ -155,6 +137,7 @@ public class Main {
                         continue;
                     } else {
                         System.out.println("Такой задачи нет");
+                        continue;
                     }
                 case 8:
                     System.out.println("Введите ID Эпика");
@@ -165,7 +148,8 @@ public class Main {
                         System.out.println("Готово");
                         continue;
                     } else {
-                        System.out.println("Такой задачи нет");
+                        System.out.println("Такого эпика нет");
+                        continue;
                     }
                 case 9:
                     System.out.println("Введите ID подзадачи");
@@ -202,6 +186,10 @@ public class Main {
                     continue;
                 case 16:
                     System.out.println(manager);
+                    continue;
+                case 17:
+                    System.out.println(manager.getHistory());
+                    continue;
             }
         }
     }
@@ -227,6 +215,7 @@ public class Main {
             System.out.println("14 - Удалить Эпик по ID");
             System.out.println("15 - Удалить подзадачу по ID");
             System.out.println("16 - Распечатать полный список задач, эпиков и подзадач");
+            System.out.println("17 - Историю запросов");
 
 
             System.out.println("exit - Выход");
@@ -239,7 +228,7 @@ public class Main {
 
                     int userInputInt = Integer.parseInt(userInputString);
 
-                    if (userInputInt >= 1 && userInputInt <= 16) {
+                    if (userInputInt >= 1 && userInputInt <= 17) {
                         return userInputInt;
                     } else {
                         System.out.println("Не верная команда");

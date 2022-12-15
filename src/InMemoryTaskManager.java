@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-public class Manager {
 
-    private HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    private HashMap<Integer, Task> taskHashMap = new HashMap<>();
+public class InMemoryTaskManager implements TaskManager {
+
+    HashMap<Integer, Epic> epicHashMap = new HashMap<>();
+    HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    ArrayList<Task> history = new ArrayList<>();
     private int idTask = 1;
     private int idSubTask = 1;
     private int idEpic = 1;
@@ -21,63 +23,86 @@ public class Manager {
         return taskHashMap;
     }
 
+    @Override
     public void newTask(String name, String opisanie) {
         Task task = new Task(idTask, name, opisanie);
         taskHashMap.put(idTask, task);
         idTask++;
     }
 
+    @Override
     public void newEpic(String name, String opisanie) {
         Epic epic = new Epic(idEpic, name, opisanie);
         epicHashMap.put(idEpic, epic);
         idEpic++;
     }
 
+    @Override
     public void newSubTask(String name, String opisanie, int idEpicSearch) {
-        if (!epicHashMap.containsKey(idEpicSearch)){
+        if (!epicHashMap.containsKey(idEpicSearch)) {
             System.out.println("Нет Эпика с таким ID");
-        }
-        else {
+        } else {
             Subtask subtask = new Subtask(idSubTask, name, opisanie, idEpicSearch);
             subtaskHashMap.put(idSubTask, subtask);
-            searchEpicForId(idEpicSearch).podZadachi.add(subtask);
+            epicHashMap.get(idEpicSearch).podZadachi.add(subtask);
             idSubTask++;
         }
 
     }
 
-    Epic searchEpicForId(int idEpicSearch) {
+
+
+    @Override
+    public Epic searchEpicForId(int idEpicSearch) {
+        if (history.size() == 10) {
+            history.remove(0);
+        }
+        history.add(epicHashMap.get(idEpicSearch));
         return epicHashMap.get(idEpicSearch);
     }
 
-    Task searchTaskForId(int idTaskSearch) {
+    @Override
+    public Task searchTaskForId(int idTaskSearch) {
+        if (history.size() == 10) {
+            history.remove(0);
+        }
+        history.add(taskHashMap.get(idTaskSearch));
         return taskHashMap.get(idTaskSearch);
     }
 
-    Task searchSubtaskForId(int idSubtaskSearch) {
+    @Override
+    public Task searchSubtaskForId(int idSubtaskSearch) {
+        if (history.size() == 10) {
+            history.remove(0);
+        }
+        history.add(subtaskHashMap.get(idSubtaskSearch));
         return subtaskHashMap.get(idSubtaskSearch);
     }
 
+    @Override
     public void clearEpic() {
         epicHashMap.clear();
     }
 
+    @Override
     public void clearTask() {
         taskHashMap.clear();
     }
 
+    @Override
     public void clearSubtask() {
         subtaskHashMap.clear();
-        for(Epic epic : epicHashMap.values())
-        {
+        for (Epic epic : epicHashMap.values()) {
             epic.podZadachi.clear();
         }
     }
 
+    @Override
     public void refreshTask(Task newTask) {
         taskHashMap.put(newTask.id, newTask);
     }
 
+    @Override
     public void refreshSubTask(Subtask newSubtask) {
         epicHashMap.get(newSubtask.idEpic).podZadachi.remove(subtaskHashMap.get(newSubtask.id));
         epicHashMap.get(newSubtask.idEpic).podZadachi.add(newSubtask);
@@ -85,42 +110,53 @@ public class Manager {
         epicHashMap.get(newSubtask.idEpic).refreshStatus();
     }
 
+    @Override
     public void refreshEpic(Epic newEpic) {
         newEpic.podZadachi = searchEpicForId(newEpic.id).podZadachi;
         epicHashMap.put(newEpic.id, newEpic);
         newEpic.refreshStatus();
     }
 
+    @Override
     public void deleteTaskForId(int idDelete) {
-        if (!taskHashMap.containsKey(idDelete)){
+        if (!taskHashMap.containsKey(idDelete)) {
             System.out.println("Нет задачи с таким ID");
+        } else {
+            taskHashMap.remove(idDelete);
         }
-        else {
-        taskHashMap.remove(idDelete);}
     }
 
+    @Override
     public void deleteSubTaskForId(int idDelete) {
-        if (!subtaskHashMap.containsKey(idDelete)){
+        if (!subtaskHashMap.containsKey(idDelete)) {
             System.out.println("Нет подзадачи с таким ID");
+        } else {
+            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).podZadachi.remove(subtaskHashMap.get(idDelete));
+            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
+            subtaskHashMap.remove(idDelete);
         }
-        else {
-        epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).podZadachi.remove(subtaskHashMap.get(idDelete));
-        epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
-        subtaskHashMap.remove(idDelete);
-    }}
+    }
+
+    @Override
     public void deleteEpicForId(int idDelete) {
-        if (!epicHashMap.containsKey(idDelete)){
+        if (!epicHashMap.containsKey(idDelete)) {
             System.out.println("Нет Эпика с таким ID");
+        } else {
+            for (Subtask subtask : epicHashMap.get(idDelete).podZadachi) {
+                subtaskHashMap.remove(subtask);
+            }
         }
-        else {
-        for (Subtask subtask : epicHashMap.get(idDelete).podZadachi) {
-            subtaskHashMap.remove(subtask);
-        }}
         epicHashMap.remove(idDelete);
     }
 
+    @Override
     public ArrayList<Subtask> getSubTasksForEpicId(int idEpic) {
         return epicHashMap.get(idEpic).podZadachi;
+    }
+
+    @Override
+    public ArrayList<Task> getHistory()  {
+        return history;
     }
 
     @Override
