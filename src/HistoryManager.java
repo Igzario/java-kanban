@@ -1,3 +1,10 @@
+import java.util.ArrayList;
+
 public interface HistoryManager {
-    public void add(Task task);
+
+     void add(Task task);
+     ArrayList<Task> getHistory();
+
+
+
 }

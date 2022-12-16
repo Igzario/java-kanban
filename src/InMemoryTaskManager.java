@@ -3,13 +3,10 @@ import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    HashMap<Integer, Task> taskHashMap = new HashMap<>();
-    ArrayList<Task> history = new ArrayList<>();
-    private int idTask = 1;
-    private int idSubTask = 1;
-    private int idEpic = 1;
+    int idTask = 1;
+    int idSubTask = 1;
+    int idEpic = 1;
+    HistoryManager historyManager = new InMemoryHistoryManager();
 
     public HashMap<Integer, Epic> getEpicHashMap() {
         return epicHashMap;
@@ -50,32 +47,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-
-
     @Override
     public Epic searchEpicForId(int idEpicSearch) {
-        if (history.size() == 10) {
-            history.remove(0);
-        }
-        history.add(epicHashMap.get(idEpicSearch));
+        historyManager.add(epicHashMap.get(idEpicSearch));
         return epicHashMap.get(idEpicSearch);
     }
 
     @Override
     public Task searchTaskForId(int idTaskSearch) {
-        if (history.size() == 10) {
-            history.remove(0);
-        }
-        history.add(taskHashMap.get(idTaskSearch));
+        historyManager.add(taskHashMap.get(idTaskSearch));
         return taskHashMap.get(idTaskSearch);
     }
 
     @Override
     public Task searchSubtaskForId(int idSubtaskSearch) {
-        if (history.size() == 10) {
-            history.remove(0);
-        }
-        history.add(subtaskHashMap.get(idSubtaskSearch));
+        historyManager.add(subtaskHashMap.get(idSubtaskSearch));
         return subtaskHashMap.get(idSubtaskSearch);
     }
 
@@ -150,14 +136,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public HistoryManager getHistory() {
+        return historyManager;
+    }
+
+    @Override
     public ArrayList<Subtask> getSubTasksForEpicId(int idEpic) {
         return epicHashMap.get(idEpic).podZadachi;
     }
 
-    @Override
-    public ArrayList<Task> getHistory()  {
-        return history;
-    }
 
     @Override
     public String toString() {
@@ -175,4 +162,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return result;
     }
+
+
 }

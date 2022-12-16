@@ -1,3 +1,9 @@
+//Приветствую! вохникли трудности с этой задачей, не понял я, что нужно сделать в пункте "Сделайте историю задач интерфейсом"
+//скорее всего я сделал не правильно, прошу обьяснить, что требуется сделать...
+
+//"Объявите класс InMemoryHistoryManager и перенесите в него часть кода для работы с историей из класса InMemoryTaskManager" -
+// вот этот момент тоже не понял, какую именно часть кода следует перенести
+
 
 import java.util.Scanner;
 
@@ -6,7 +12,6 @@ public class Main {
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
         Scanner scanner = new Scanner(System.in);
-
 
         while (true) {
             int userInput = printMenuAndRead(scanner);
@@ -189,7 +194,8 @@ public class Main {
                     continue;
                 case 17:
                     System.out.println(manager.getHistory());
-                    continue;
+
+
             }
         }
     }
