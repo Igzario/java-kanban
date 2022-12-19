@@ -2,9 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface TaskManager {
-    HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    HashMap<Integer, Task> taskHashMap = new HashMap<>();
+
 
     void newTask(String name, String opisanie);
 

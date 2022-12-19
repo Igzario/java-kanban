@@ -2,11 +2,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-
-    int idTask = 1;
-    int idSubTask = 1;
-    int idEpic = 1;
-    HistoryManager historyManager = new InMemoryHistoryManager();
+    HashMap<Integer, Epic> epicHashMap= new HashMap<>();
+    HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    protected int idTask = 1;
+    protected int idSubTask = 1;
+    protected int idEpic = 1;
+    protected HistoryManager historyManager = new InMemoryHistoryManager();
 
     public HashMap<Integer, Epic> getEpicHashMap() {
         return epicHashMap;
@@ -41,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             Subtask subtask = new Subtask(idSubTask, name, opisanie, idEpicSearch);
             subtaskHashMap.put(idSubTask, subtask);
-            epicHashMap.get(idEpicSearch).podZadachi.add(subtask);
+            epicHashMap.get(idEpicSearch).epicSubTasksList.add(subtask);
             idSubTask++;
         }
 
@@ -49,8 +51,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic searchEpicForId(int idEpicSearch) {
-        historyManager.add(epicHashMap.get(idEpicSearch));
-        return epicHashMap.get(idEpicSearch);
+            historyManager.add(epicHashMap.get(idEpicSearch));
+            return epicHashMap.get(idEpicSearch);
+
     }
 
     @Override
@@ -79,7 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearSubtask() {
         subtaskHashMap.clear();
         for (Epic epic : epicHashMap.values()) {
-            epic.podZadachi.clear();
+            epic.epicSubTasksList.clear();
         }
     }
 
@@ -90,15 +93,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void refreshSubTask(Subtask newSubtask) {
-        epicHashMap.get(newSubtask.idEpic).podZadachi.remove(subtaskHashMap.get(newSubtask.id));
-        epicHashMap.get(newSubtask.idEpic).podZadachi.add(newSubtask);
+        epicHashMap.get(newSubtask.idEpic).epicSubTasksList.remove(subtaskHashMap.get(newSubtask.id));
+        epicHashMap.get(newSubtask.idEpic).epicSubTasksList.add(newSubtask);
         subtaskHashMap.put(newSubtask.id, newSubtask);
         epicHashMap.get(newSubtask.idEpic).refreshStatus();
     }
 
     @Override
     public void refreshEpic(Epic newEpic) {
-        newEpic.podZadachi = searchEpicForId(newEpic.id).podZadachi;
+        newEpic.epicSubTasksList = searchEpicForId(newEpic.id).epicSubTasksList;
         epicHashMap.put(newEpic.id, newEpic);
         newEpic.refreshStatus();
     }
@@ -117,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtaskHashMap.containsKey(idDelete)) {
             System.out.println("Нет подзадачи с таким ID");
         } else {
-            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).podZadachi.remove(subtaskHashMap.get(idDelete));
+            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).epicSubTasksList.remove(subtaskHashMap.get(idDelete));
             epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
             subtaskHashMap.remove(idDelete);
         }
@@ -128,7 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epicHashMap.containsKey(idDelete)) {
             System.out.println("Нет Эпика с таким ID");
         } else {
-            for (Subtask subtask : epicHashMap.get(idDelete).podZadachi) {
+            for (Subtask subtask : epicHashMap.get(idDelete).epicSubTasksList) {
                 subtaskHashMap.remove(subtask);
             }
         }
@@ -142,25 +145,26 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Subtask> getSubTasksForEpicId(int idEpic) {
-        return epicHashMap.get(idEpic).podZadachi;
+        return epicHashMap.get(idEpic).epicSubTasksList;
     }
 
 
     @Override
     public String toString() {
-        String result = "\n\nСписок задач:";
+        StringBuilder result = new StringBuilder("\n\nСписок задач:");
+
         for (Task task : taskHashMap.values()) {
-            result = result + "\nID - " + task.id + ", Название - " + task.name + ", Статус - " + task.status;
+            result.append("\nID - " + task.id + ", Название - " + task.name + ", Статус - " + task.status);
         }
-        result = result + "\n\nСписок Эпиков и подзадач: ";
+        result.append("\n\nСписок Эпиков и подзадач: ");
         for (Epic epic : epicHashMap.values()) {
-            result = result + "\n=========================================";
-            result = result + "\nID - " + epic.id + ", Название - " + epic.name + ", Статус - " + epic.status + "\nПодзадачи:";
-            for (Subtask subtask : epic.podZadachi) {
-                result = result + "\nID - " + subtask.id + ", Название - " + subtask.name + ", Статус - " + subtask.status;
+            result.append("\n=========================================");
+            result.append("\nID - " + epic.id + ", Название - " + epic.name + ", Статус - " + epic.status + "\nПодзадачи:");
+            for (Subtask subtask : epic.epicSubTasksList) {
+                result.append("\nID - " + subtask.id + ", Название - " + subtask.name + ", Статус - " + subtask.status);
             }
         }
-        return result;
+        return result.toString();
     }
 
 
