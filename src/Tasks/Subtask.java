@@ -1,6 +1,10 @@
-public class Subtask extends Task{
+package Tasks;
 
-    protected int idEpic ;
+import Tasks.Task;
+
+public class Subtask extends Task {
+
+    public int idEpic ;
 
     public Subtask(int id, String name, String opisanie, int epic) {
         super(id, name, opisanie);

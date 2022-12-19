@@ -1,7 +1,13 @@
+package Tasks;
+
+import Tasks.Status;
+import Tasks.Subtask;
+import Tasks.Task;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    protected ArrayList<Subtask> epicSubTasksList;
+    public ArrayList<Subtask> epicSubTasksList;
 
     public Epic(int id, String name, String opisanie) {
         super(id, name, opisanie);
@@ -14,7 +20,7 @@ public class Epic extends Task {
         int countProgress = 0;
 
         for (Subtask o : this.epicSubTasksList) {
-            if (o.status==Status.NEW) {
+            if (o.status== Status.NEW) {
                 countNew++;
             }
             if (o.status==Status.DONE) {

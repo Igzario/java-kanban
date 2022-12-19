@@ -1,9 +1,46 @@
-//Приветствую! вохникли трудности с этой задачей, не понял я, что нужно сделать в пункте "Сделайте историю задач интерфейсом"
-//скорее всего я сделал не правильно, прошу обьяснить, что требуется сделать...
+// Про нейминг я тебе уже писал  - ага, исправил
 
-//"Объявите класс InMemoryHistoryManager и перенесите в него часть кода для работы с историей из класса InMemoryTaskManager" -
-// вот этот момент тоже не понял, какую именно часть кода следует перенести
+// Почему выбрал для реализации ArrayList<>()?
+// И почему выбрал дефолтный модификатор доступа?  -  на ArrayList тут, мне кажется, подходит. если бы надо было сохранять
+// id-название применил бы HashMap. Или тут что-то подойдет лучше?
+// изменил на protected final
 
+//Что будет, если передать в метод task=null? - у нас есть проверка на входе, т.е. где идет поиск задачи по id на существование
+//такой задачи, я хотел перенести проверку в сам метод, но не понятно какой будет интерфейс работы с этой программой
+//и корректно ли использовать sout в методе, ведь консоли же не будет. То же самое и с этим методом, что возвращать в случае
+//ошибки? если опять же учитывать, что консоли не будет. я добавил проверку, но не уверен, что в дальнейшем она будет работать правильно
+
+//Почему тут тоже использовал дефолтные модификаторы? - забыл, надо выработать привычку сразу расставлять модификаторы
+
+//У тебя очень много операций конкатенаций - использовал StringBuilder - заранее выделять место в памяти же не надо?
+//оно будет автоматически расширяться по мере добавления символов?
+
+//Вот тут не совсем удобно. Сходу не известно какие идентификаторы - поправил, но т.к. в дальнейшем консоли не будет,
+//смысла то особо и нет.
+
+//У тебя так же остался баг с перескакиванием на описание задачи через название. - я уже их много отловил, это из-за сканера
+// - сделал отдельные сканеры
+
+
+//Зачем ты прописал тут конструктор? - убрал)
+
+//А куда делись все методы работы с задачами/эпиками/подзадачами, которые были в прошлом спринте? -
+//так их в task и не было, они в Managers.TaskManager
+
+//Почему выбрал модификатор protected? - самый оптимальный модификатор, не public  и не private
+
+//Почему ты решил прописать поля в интерфейсе? Ты в курсе какие ограничения получают такие поля - это я экспериментировал
+//и не вернул обратно
+
+//Для чего ты тут используешь дженерики? - что бы ограничить создание managers, мне же в нем нужно работать с объектом
+//наследником Managers.TaskManager и объектом наследником Managers.Managers.HistoryManager
+
+
+import Managers.InMemoryTaskManager;
+import Tasks.Epic;
+import Tasks.Status;
+import Tasks.Subtask;
+import Tasks.Task;
 
 import java.util.Scanner;
 
@@ -15,14 +52,17 @@ public class Main {
 
         while (true) {
             int userInput = printMenuAndRead(scanner);
+            Scanner scanner1 = new Scanner(System.in);
             Scanner scanner2 = new Scanner(System.in);
+            Scanner scanner3 = new Scanner(System.in);
+            Scanner scanner4 = new Scanner(System.in);
             if (userInput == 0) {
                 break;
             }
             switch (userInput) {
                 case 1:
                     System.out.println("Введите название задачи:");
-                    String nameTask = scanner2.nextLine();
+                    String nameTask = scanner1.nextLine();
                     System.out.println("Введите описание задачи");
                     String opisanieTask = scanner2.nextLine();
                     manager.newTask(nameTask, opisanieTask);
@@ -30,7 +70,7 @@ public class Main {
                     continue;
                 case 2:
                     System.out.println("Введите название Эпика:");
-                    String nameEpic = scanner2.nextLine();
+                    String nameEpic = scanner1.nextLine();
                     System.out.println("Введите описание Эпика");
                     String opisanieEpic = scanner2.nextLine();
                     manager.newEpic(nameEpic, opisanieEpic);
@@ -38,24 +78,26 @@ public class Main {
                     continue;
                 case 3:
                     System.out.println("Введите название подзадачи:");
-                    String nameSubTask = scanner2.nextLine();
+                    String nameSubTask = scanner1.nextLine();
                     System.out.println("Введите описание подзадачи");
                     String opisanieSubTask = scanner2.nextLine();
+                    System.out.println(manager.getEpicHashMap());
                     System.out.println("Введите ID Эпика");
-                    int idEpic = scanner2.nextInt();
+                    int idEpic = scanner3.nextInt();
                     manager.newSubTask(nameSubTask, opisanieSubTask, idEpic);
                     System.out.println("Готово");
                     continue;
                 case 4:
                     System.out.println("Введите ID целевой задачи");
-                    int idTask = scanner2.nextInt();
+
+                    int idTask = scanner1.nextInt();
                     if (manager.getTaskHashMap().containsKey(idTask)) {
                         System.out.println("Введите новое название задачи:");
                         String newNameTask = scanner2.nextLine();
                         System.out.println("Введите новое описание задачи");
-                        String newOpisanieTask = scanner2.nextLine();
+                        String newOpisanieTask = scanner3.nextLine();
                         System.out.println("Выберите новый статус задачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int status = scanner2.nextInt();
+                        int status = scanner4.nextInt();
                         Task task = new Task(idTask, newNameTask, newOpisanieTask);
                         if (status == 1) {
                             task.status = Status.NEW;
@@ -77,14 +119,14 @@ public class Main {
                     }
                 case 5:
                     System.out.println("Введите ID целевого Эпика");
-                    int idNewEpic = scanner2.nextInt();
+                    int idNewEpic = scanner1.nextInt();
                     if (manager.getEpicHashMap().containsKey(idNewEpic)) {
                         System.out.println("Введите новое название Эпика");
                         String newNameEpic = scanner2.nextLine();
                         System.out.println("Введите новое описание Эпика");
-                        String newOpisanieEpic = scanner2.nextLine();
+                        String newOpisanieEpic = scanner3.nextLine();
                         System.out.println("Выберите новый статус Эпика: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int statusNew = scanner2.nextInt();
+                        int statusNew = scanner4.nextInt();
                         Epic epic = new Epic(idNewEpic, newNameEpic, newOpisanieEpic);
                         if (statusNew == 1) {
                             epic.status = Status.NEW;
@@ -105,14 +147,14 @@ public class Main {
                     }
                 case 6:
                     System.out.println("Введите ID целевой подзадачи`");
-                    int idNewSubTask = scanner2.nextInt();
+                    int idNewSubTask = scanner1.nextInt();
                     if (manager.getSubtaskHashMap().containsKey(idNewSubTask)) {
                         System.out.println("Введите новое название подзадачи");
                         String newNameSubTask = scanner2.nextLine();
                         System.out.println("Введите новое описание подзадачи");
-                        String newOpisanieSubTask = scanner2.nextLine();
+                        String newOpisanieSubTask = scanner3.nextLine();
                         System.out.println("Выберите новый статус подзадачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int statusNewSubTask = scanner2.nextInt();
+                        int statusNewSubTask = scanner4.nextInt();
                         int idEpicSub = manager.getSubtaskHashMap().get(idNewSubTask).idEpic;
                         Subtask subtask = new Subtask(idNewSubTask, newNameSubTask, newOpisanieSubTask, idEpicSub);
                         if (statusNewSubTask == 1) {
@@ -135,7 +177,7 @@ public class Main {
                     }
                 case 7:
                     System.out.println("Введите ID задачи");
-                    int idSearchTask = scanner2.nextInt();
+                    int idSearchTask = scanner1.nextInt();
                     if (manager.getTaskHashMap().containsKey(idSearchTask)) {
                         System.out.println(manager.searchTaskForId(idSearchTask));
                         System.out.println("Готово");
@@ -146,9 +188,8 @@ public class Main {
                     }
                 case 8:
                     System.out.println("Введите ID Эпика");
-                    int idSearchEpic = scanner2.nextInt();
+                    int idSearchEpic = scanner1.nextInt();
                     if (manager.getEpicHashMap().containsKey(idSearchEpic)) {
-
                         System.out.println(manager.searchEpicForId(idSearchEpic));
                         System.out.println("Готово");
                         continue;
@@ -158,9 +199,8 @@ public class Main {
                     }
                 case 9:
                     System.out.println("Введите ID подзадачи");
-                    int idSearchSubTask = scanner2.nextInt();
+                    int idSearchSubTask = scanner1.nextInt();
                     if (manager.getSubtaskHashMap().containsKey(idSearchSubTask)) {
-
                         System.out.println(manager.searchSubtaskForId(idSearchSubTask));
                         System.out.println("Готово");
                         continue;
@@ -176,17 +216,17 @@ public class Main {
                     continue;
                 case 13:
                     System.out.println("Введите ID задачи для удаления");
-                    int idDelTask = scanner2.nextInt();
+                    int idDelTask = scanner1.nextInt();
                     manager.deleteTaskForId(idDelTask);
                     continue;
                 case 14:
                     System.out.println("Введите ID Эпика для удаления");
-                    int idDelEpic = scanner2.nextInt();
+                    int idDelEpic = scanner1.nextInt();
                     manager.deleteEpicForId(idDelEpic);
                     continue;
                 case 15:
                     System.out.println("Введите ID подзадачи для удаления");
-                    int idDelSubtask = scanner2.nextInt();
+                    int idDelSubtask = scanner1.nextInt();
                     manager.deleteSubTaskForId(idDelSubtask);
                     continue;
                 case 16:

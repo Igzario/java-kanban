@@ -1,6 +1,10 @@
+package Managers;
+
+import Tasks.Task;
+
 import java.util.ArrayList;
 
-public class InMemoryHistoryManager implements  HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
 
     protected final ArrayList<Task> history = new ArrayList<>();
     protected final int HISTORY_SIZE = 10;

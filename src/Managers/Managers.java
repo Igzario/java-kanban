@@ -1,3 +1,5 @@
+package Managers;
+
 public class Managers<T extends TaskManager, Y extends HistoryManager> {
 
     T taskManager;

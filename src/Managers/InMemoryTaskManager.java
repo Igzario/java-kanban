@@ -1,3 +1,8 @@
+package Managers;
+import Tasks.Epic;
+import Tasks.Subtask;
+import Tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     HashMap<Integer, Task> taskHashMap = new HashMap<>();
     protected int idTask = 1;
     protected int idSubTask = 1;
-    protected int idEpic = 1;
+    public int idEpic = 1;
     protected HistoryManager historyManager = new InMemoryHistoryManager();
 
     public HashMap<Integer, Epic> getEpicHashMap() {
