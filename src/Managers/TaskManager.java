@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public interface TaskManager {
 
+    public void checkClass();
 
     void newTask(String name, String opisanie);
 

@@ -7,13 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-    HashMap<Integer, Epic> epicHashMap= new HashMap<>();
-    HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    HashMap<Integer, Task> taskHashMap = new HashMap<>();
-    protected int idTask = 1;
-    protected int idSubTask = 1;
-    public int idEpic = 1;
-    protected HistoryManager historyManager = new InMemoryHistoryManager();
+    private HashMap<Integer, Epic> epicHashMap= new HashMap<>();
+    private HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    private HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    private int idTask = 1;
+    private int idSubTask = 1;
+    private int idEpic = 1;
+    private Managers managers = new Managers();
+    private HistoryManager historyManager;
+
 
     public HashMap<Integer, Epic> getEpicHashMap() {
         return epicHashMap;
@@ -28,10 +30,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public void checkClass(){
+        InMemoryTaskManager checkClass = new InMemoryTaskManager();
+        historyManager = managers.getDefaultHistory(checkClass);
+    }
+
+    @Override
     public void newTask(String name, String opisanie) {
         Task task = new Task(idTask, name, opisanie);
         taskHashMap.put(idTask, task);
         idTask++;
+
     }
 
     @Override
@@ -106,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void refreshEpic(Epic newEpic) {
-        newEpic.epicSubTasksList = searchEpicForId(newEpic.id).epicSubTasksList;
+        newEpic.epicSubTasksList = epicHashMap.get(newEpic.id).epicSubTasksList;
         epicHashMap.put(newEpic.id, newEpic);
         newEpic.refreshStatus();
     }

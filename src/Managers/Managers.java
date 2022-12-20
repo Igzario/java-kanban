@@ -1,22 +1,16 @@
 package Managers;
 
-public class Managers<T extends TaskManager, Y extends HistoryManager> {
-
-    T taskManager;
-    Y historyManager;
-
-    public Managers(T taskManager, Y historyManager) {
-        this.taskManager = taskManager;
-        this.historyManager = historyManager;
-    }
+public class Managers<T extends TaskManager> {
 
     public TaskManager getDefault() {
-        return taskManager;
+        return null;
     }
 
-    public HistoryManager getDefaultHistory() {
-        return historyManager;
+    public HistoryManager getDefaultHistory(T taskManager) {
+        if (taskManager instanceof InMemoryTaskManager) {
+            HistoryManager historyManager = new InMemoryHistoryManager();
+            return historyManager;
+        }
+        return null;
     }
-
-
 }

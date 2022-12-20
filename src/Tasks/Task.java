@@ -7,10 +7,10 @@ public class Task {
     public String discription;
     public Status status;
 
-    public Task(int id, String name, String opisanie) {
+    public Task(int id, String name, String discription) {
         this.id = id;
         this.name = name;
-        this.discription = opisanie;
+        this.discription = discription;
         this.status = Status.NEW;
     }
 
