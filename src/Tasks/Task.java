@@ -4,13 +4,13 @@ public class Task {
 
     public int id;
     public String name;
-    public String discription;
+    public String description;
     public Status status;
 
     public Task(int id, String name, String discription) {
         this.id = id;
         this.name = name;
-        this.discription = discription;
+        this.description = discription;
         this.status = Status.NEW;
     }
 
@@ -18,7 +18,7 @@ public class Task {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("\nID - " + id + ", Название - " + name
-                + ", Описание  - " + discription
+                + ", Описание  - " + description
                 + ", Статус - " + status);
         return result.toString();
     }

@@ -1,16 +1,12 @@
 package Managers;
 
-public class Managers<T extends TaskManager> {
+public class Managers {
 
-    public TaskManager getDefault() {
-        return null;
+    public static TaskManager getDefault() {
+        return new InMemoryTaskManager();
     }
 
-    public HistoryManager getDefaultHistory(T taskManager) {
-        if (taskManager instanceof InMemoryTaskManager) {
-            HistoryManager historyManager = new InMemoryHistoryManager();
-            return historyManager;
-        }
-        return null;
+    public static HistoryManager getDefaultHistory() {
+        return new InMemoryHistoryManager();
     }
 }

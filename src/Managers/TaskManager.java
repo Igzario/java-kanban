@@ -5,16 +5,24 @@ import Tasks.Subtask;
 import Tasks.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public interface TaskManager {
 
-    public void checkClass();
 
-    void newTask(String name, String opisanie);
+    HashMap<Integer, Epic> getEpicHashMap();
 
-    void newEpic(String name, String opisanie);
+    HashMap<Integer, Subtask> getSubtaskHashMap();
 
-    void newSubTask(String name, String opisanie, int idEpicSearch);
+    HashMap<Integer, Task> getTaskHashMap();
+
+    void newTask(String name, String description);
+
+    void newEpic(String name, String description);
+
+    void newSubTask(String name, String description, int idEpicSearch);
 
     Epic searchEpicForId(int idEpicSearch);
 
@@ -40,7 +48,7 @@ public interface TaskManager {
 
     void deleteEpicForId(int idDelete);
 
-    HistoryManager getHistory();
+    List<Task> getHistory();
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
 

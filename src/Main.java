@@ -1,17 +1,7 @@
-// Почему теперь protected? - изменил на private и применил LinkedList, из реализаций List, только он подходит
+// Вроде бы понял, что нужно было сделать), получается я перемудрил
 
-//модификаторы в InMemoryTaskManager поменял
-
-//Очень странно конечно, что такой баг возникает. - если в одном блоке case x: вызывать один сканер несколько раз
-//происходит баг, создал 4 сканера, и вызываю их по очереди, все ок...
-
-//________________________
-
-//я поменял логика работы истории и Managers, посмотри пожалуйста, так вроде более правильно
-
-//------------------------
-
-import Managers.InMemoryTaskManager;
+import Managers.Managers;
+import Managers.TaskManager;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
@@ -21,10 +11,8 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
-        manager.checkClass();
+        TaskManager manager = Managers.getDefault();
         Scanner scanner = new Scanner(System.in);
-
         while (true) {
             int userInput = printMenuAndRead(scanner);
             Scanner scanner1 = new Scanner(System.in);

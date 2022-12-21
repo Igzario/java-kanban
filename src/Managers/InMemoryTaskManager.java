@@ -3,59 +3,57 @@ import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Epic> epicHashMap= new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    private HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    private final HashMap<Integer, Epic> epicHashMap= new HashMap<>();
+    private final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    private final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private int idTask = 1;
     private int idSubTask = 1;
     private int idEpic = 1;
-    private Managers managers = new Managers();
-    private HistoryManager historyManager;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-
+    @Override
     public HashMap<Integer, Epic> getEpicHashMap() {
         return epicHashMap;
     }
 
+    @Override
     public HashMap<Integer, Subtask> getSubtaskHashMap() {
         return subtaskHashMap;
     }
 
+    @Override
     public HashMap<Integer, Task> getTaskHashMap() {
         return taskHashMap;
     }
 
     @Override
-    public void checkClass(){
-        InMemoryTaskManager checkClass = new InMemoryTaskManager();
-        historyManager = managers.getDefaultHistory(checkClass);
-    }
-
-    @Override
-    public void newTask(String name, String opisanie) {
-        Task task = new Task(idTask, name, opisanie);
+    public void newTask(String name, String description) {
+        Task task = new Task(idTask, name, description);
         taskHashMap.put(idTask, task);
         idTask++;
 
     }
 
     @Override
-    public void newEpic(String name, String opisanie) {
-        Epic epic = new Epic(idEpic, name, opisanie);
+    public void newEpic(String name, String description) {
+        Epic epic = new Epic(idEpic, name, description);
         epicHashMap.put(idEpic, epic);
         idEpic++;
     }
 
     @Override
-    public void newSubTask(String name, String opisanie, int idEpicSearch) {
+    public void newSubTask(String name, String description, int idEpicSearch) {
         if (!epicHashMap.containsKey(idEpicSearch)) {
             System.out.println("Нет Эпика с таким ID");
         } else {
-            Subtask subtask = new Subtask(idSubTask, name, opisanie, idEpicSearch);
+            Subtask subtask = new Subtask(idSubTask, name, description, idEpicSearch);
             subtaskHashMap.put(idSubTask, subtask);
             epicHashMap.get(idEpicSearch).epicSubTasksList.add(subtask);
             idSubTask++;
@@ -153,8 +151,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HistoryManager getHistory() {
-        return historyManager;
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
     @Override
