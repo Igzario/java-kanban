@@ -3,10 +3,8 @@ import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -14,8 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
     private final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private int idTask = 1;
-    private int idSubTask = 1;
-    private int idEpic = 1;
+
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
@@ -43,9 +40,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void newEpic(String name, String description) {
-        Epic epic = new Epic(idEpic, name, description);
-        epicHashMap.put(idEpic, epic);
-        idEpic++;
+        Epic epic = new Epic(idTask, name, description);
+        epicHashMap.put(idTask, epic);
+        idTask++;
     }
 
     @Override
@@ -53,10 +50,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epicHashMap.containsKey(idEpicSearch)) {
             System.out.println("Нет Эпика с таким ID");
         } else {
-            Subtask subtask = new Subtask(idSubTask, name, description, idEpicSearch);
-            subtaskHashMap.put(idSubTask, subtask);
+            Subtask subtask = new Subtask(idTask, name, description, idEpicSearch);
+            subtaskHashMap.put(idTask, subtask);
             epicHashMap.get(idEpicSearch).epicSubTasksList.add(subtask);
-            idSubTask++;
+            idTask++;
         }
 
     }
@@ -124,6 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Нет задачи с таким ID");
         } else {
             taskHashMap.remove(idDelete);
+            historyManager.remove(idDelete);
         }
     }
 
@@ -135,6 +133,7 @@ public class InMemoryTaskManager implements TaskManager {
             epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).epicSubTasksList.remove(subtaskHashMap.get(idDelete));
             epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
             subtaskHashMap.remove(idDelete);
+            historyManager.remove(idDelete);
         }
     }
 
@@ -144,10 +143,13 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Нет Эпика с таким ID");
         } else {
             for (Subtask subtask : epicHashMap.get(idDelete).epicSubTasksList) {
+                historyManager.remove(subtask.id);
                 subtaskHashMap.remove(subtask);
+
             }
         }
         epicHashMap.remove(idDelete);
+        historyManager.remove(idDelete);
     }
 
     @Override
