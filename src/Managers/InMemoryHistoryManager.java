@@ -6,10 +6,10 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    public Node<Task> tail;
+    private Node<Task> tail;
     private int size = 0;
 
-    private HashMap<Integer, Node> hashHistory = new HashMap<>();
+    private final HashMap<Integer, Node> hashHistory = new HashMap<>();
 
     public void linkLast(Task task) {
         final Node<Task> oldTail = tail;
@@ -19,19 +19,22 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = newNode;
         } else
             oldTail.next = newNode;
-            size++;
+        size++;
     }
 
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-
         if (tail.data != null) {
             Node<Task> check = tail;
-
+            for (int i = 0; i < size; i++) {
+                if (check != null && check.data != null && check.prev != null) {
+                    check = check.prev;
+                }
+            }
             for (int i = 0; i < size; i++) {
                 if (check != null && check.data != null) {
                     tasks.add(check.data);
-                    check = check.prev;
+                    check = check.next;
                 }
             }
         }
@@ -39,31 +42,37 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void removeNode(Node node) {
-        Node<Task> check = tail;
-        for (int i = 0; i < size; i++) {
-            if (check == node && check.prev == null) {
-                check.data = null;
-                size--;
-                check.next.prev = null;
-            } else if (check == node && check.next == null) {
-                check.data = null;
-                size--;
-                tail = check.prev;
-            } else if (check == node) {
-                check.prev.next = check.next;
-                check.data = null;
-                check.next.prev = check.prev;
-                size--;
-            } else
-                check = check.prev;
-        }
+        if (node != null) {
+            Node<Task> check = tail;
+            for (int i = 0; i < size; i++) {
+                if (check == node && check.prev == null && check.next == null) {
+                    check.data = null;
+                    size--;
+                    return;
+                } else if (check == node && check.prev == null) {
+                    check.data = null;
+                    size--;
+                    check.next.prev = null;
+                } else if (check == node && check.next == null) {
+                    check.data = null;
+                    size--;
+                    tail = check.prev;
+                } else if (check == node) {
+                    check.prev.next = check.next;
+                    check.data = null;
+                    check.next.prev = check.prev;
+                    size--;
+                } else
+                    check = check.prev;
+            }
+        } else
+            System.out.println("Удаление Node не возможно");
     }
 
 
     @Override
     public void add(Task task) {
         if (task != null) {
-
             if (hashHistory.containsKey(task.id)) {
                 removeNode(hashHistory.get(task.id));
                 linkLast(task);
@@ -71,7 +80,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 linkLast(task);
                 hashHistory.put(task.id, tail);
             }
-
         } else {
             System.out.println("Не добавлено");
         }
@@ -81,7 +89,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         removeNode(hashHistory.get(id));
         hashHistory.remove(id);
-
     }
 
     @Override
@@ -94,7 +101,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         StringBuilder result = new StringBuilder();
         result.append("\nИстория запросов:");
         for (Task task : getTasks()) {
-            result.append("\nНазвание: " + task.name);
+            result.append("\nНазвание: ");
+            result.append(task.name);
         }
         return result.toString();
     }

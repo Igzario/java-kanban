@@ -1,7 +1,5 @@
 package Tasks;
 
-import Tasks.Task;
-
 public class Subtask extends Task {
 
     public int idEpic ;

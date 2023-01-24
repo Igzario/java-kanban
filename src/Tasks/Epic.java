@@ -1,14 +1,8 @@
 package Tasks;
-
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
     public ArrayList<Subtask> epicSubTasksList;
-
     public Epic(int id, String name, String opisanie) {
         super(id, name, opisanie);
         epicSubTasksList = new ArrayList<>();

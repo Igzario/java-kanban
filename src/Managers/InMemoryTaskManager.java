@@ -1,4 +1,5 @@
 package Managers;
+
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Epic> epicHashMap= new HashMap<>();
+    private final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
     private final HashMap<Integer, Task> taskHashMap = new HashMap<>();
     private int idTask = 1;
@@ -60,8 +61,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic searchEpicForId(int idEpicSearch) {
-            historyManager.add(epicHashMap.get(idEpicSearch));
-            return epicHashMap.get(idEpicSearch);
+        historyManager.add(epicHashMap.get(idEpicSearch));
+        return epicHashMap.get(idEpicSearch);
 
     }
 
@@ -89,10 +90,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearSubtask() {
-        subtaskHashMap.clear();
-        for (Epic epic : epicHashMap.values()) {
-            epic.epicSubTasksList.clear();
+        final HashMap<Integer, Subtask> subtaskHashMapToClear = new HashMap<>();
+        subtaskHashMapToClear.putAll(subtaskHashMap);
+        for (Subtask subtask : subtaskHashMapToClear.values()) {
+            deleteSubTaskForId(subtask.id);
         }
+
     }
 
     @Override
@@ -168,14 +171,30 @@ public class InMemoryTaskManager implements TaskManager {
         StringBuilder result = new StringBuilder("\n\nСписок задач:");
 
         for (Task task : taskHashMap.values()) {
-            result.append("\nID - " + task.id + ", Название - " + task.name + ", Статус - " + task.status);
+            result.append("\nID - ");
+            result.append(task.id);
+            result.append(", Название - ");
+            result.append(task.name);
+            result.append(", Статус - ");
+            result.append(task.status);
         }
         result.append("\n\nСписок Эпиков и подзадач: ");
         for (Epic epic : epicHashMap.values()) {
             result.append("\n=========================================");
-            result.append("\nID - " + epic.id + ", Название - " + epic.name + ", Статус - " + epic.status + "\nПодзадачи:");
+            result.append("\nID - ");
+            result.append(epic.id);
+            result.append(", Название - ");
+            result.append(epic.name);
+            result.append(", Статус - ");
+            result.append(epic.status);
+            result.append("\nПодзадачи:");
             for (Subtask subtask : epic.epicSubTasksList) {
-                result.append("\nID - " + subtask.id + ", Название - " + subtask.name + ", Статус - " + subtask.status);
+                result.append("\nID - ");
+                result.append(subtask.id);
+                result.append(", Название - ");
+                result.append(subtask.name);
+                result.append(", Статус - ");
+                result.append(subtask.status);
             }
         }
         return result.toString();
