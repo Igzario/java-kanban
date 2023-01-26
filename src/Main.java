@@ -1,33 +1,23 @@
-//У меня возник такой вопрос - ты мои комментарии к прошлому спринту последней итерации читал?
-// честно, не читал, отстал я чутка, увидел, что принято и быстрее проходить дальше) прочитал, всё поправил!
+// Если история пустая, т.е. не было вызовов задач, то результат выбора пункта 17 - NullPointerException.
+// исправил
 
-// Ты ведь такое значение уже присвоил в строке 17. Зачем тогда еще проверка с if? - тоже цепанул этот момент, но так написано
-// в примере с тренажера. убрал лишнее, вроде работает
+// Я бы прописал реализацию несколько по другому. - поменял, но ошибки были не из-за этого
 
-// Что будет, если node==null? - вообще там откуда вызывается этот метод, есть проверки, поэтому null сюда прилететь не
-// может. Прописал проверку, но как лчше делать такие проверки? Какое действие производить если проверка не пройдена?
-// печать в консоль же не везде прокатит
+// вроде все ошибки выловил, по ходу, нашел еще ошибки)
 
-
-//С какой целью использовал дженерики при реализации класса? - такой пример реализации Node использовался в примере
-// в тренажере. А данный класс создается для Task, соответственно вот...
-
-// по поводу модификаторов Task и его наследников - у меня в логике менеджеров идет туда обращение, соответственно
-// если я поставлю там protected пакет Managers теряет доступ к ним...
+//А какой смысл прописывать двумя строками? Можно ведь в одну, т.е.
+//result.append("\nНазвание: ").append(task.name);
+// я не знал, что так можно, а смысл тогда? если "").append(" вот это можно просто заменить на +?
+// append на каждой строке хотя бы читается легче как-то
 
 
-//StringBuilder везде поправил
-
-// После удаления всех подзадач, они остались в истории, что не верно. - мой косяк, поправил
-
-
-// Создал два эпика, оба запрашивал по ID (т.е. оба есть в истории).
-//Вызвал этот пункт меню и удалил один из них, из истории пропали оба. - попробовал карные комбинации и по 2 и по 3 эпика
-// c удалнием и середины и сконца, всё ок...
+// Тренажер тренажером, это всего лишь пример. - я понял, теперь понял, почему у меня в дебагере были "ссылка на ссылку"...
+// переделал, так лучше
 
 
-//История выводится снизу вверх - поменял
+// Конечно потеряется у ним доступ. А геттеры/сеттеры тебе зачем? - понял, принял!
 
+// вроде бы все замечания отработал...
 import Managers.Managers;
 import Managers.TaskManager;
 import Tasks.Epic;
@@ -91,15 +81,15 @@ public class Main {
                         int status = scanner4.nextInt();
                         Task task = new Task(idTask, newNameTask, newOpisanieTask);
                         if (status == 1) {
-                            task.status = Status.NEW;
+                            task.setStatus(Status.NEW);
                             System.out.println("Готово");
                         }
                         if (status == 2) {
-                            task.status = Status.IN_PROGRESS;
+                            task.setStatus(Status.IN_PROGRESS);
                             System.out.println("Готово");
                         }
                         if (status == 3) {
-                            task.status = Status.DONE;
+                            task.setStatus(Status.DONE);
                             System.out.println("Готово");
                         }
                         manager.refreshTask(task);
@@ -120,15 +110,15 @@ public class Main {
                         int statusNew = scanner4.nextInt();
                         Epic epic = new Epic(idNewEpic, newNameEpic, newOpisanieEpic);
                         if (statusNew == 1) {
-                            epic.status = Status.NEW;
+                            epic.setStatus(Status.NEW);
                             System.out.println("Готово");
                         }
                         if (statusNew == 2) {
-                            epic.status = Status.IN_PROGRESS;
+                            epic.setStatus(Status.IN_PROGRESS);
                             System.out.println("Готово");
                         }
                         if (statusNew == 3) {
-                            epic.status = Status.DONE;
+                            epic.setStatus(Status.DONE);
                             System.out.println("Готово");
                         }
                         manager.refreshEpic(epic);
@@ -146,18 +136,18 @@ public class Main {
                         String newOpisanieSubTask = scanner3.nextLine();
                         System.out.println("Выберите новый статус подзадачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
                         int statusNewSubTask = scanner4.nextInt();
-                        int idEpicSub = manager.getSubtaskHashMap().get(idNewSubTask).idEpic;
+                        int idEpicSub = manager.getSubtaskHashMap().get(idNewSubTask).getIdEpic();
                         Subtask subtask = new Subtask(idNewSubTask, newNameSubTask, newOpisanieSubTask, idEpicSub);
                         if (statusNewSubTask == 1) {
-                            subtask.status = Status.NEW;
+                            subtask.setStatus(Status.NEW);
                             System.out.println("Готово");
                         }
                         if (statusNewSubTask == 2) {
-                            subtask.status = Status.IN_PROGRESS;
+                            subtask.setStatus(Status.IN_PROGRESS);
                             System.out.println("Готово");
                         }
                         if (statusNewSubTask == 3) {
-                            subtask.status = Status.DONE;
+                            subtask.setStatus(Status.DONE);
                             System.out.println("Готово");
                         }
                         manager.refreshSubTask(subtask);
@@ -224,9 +214,7 @@ public class Main {
                     System.out.println(manager);
                     continue;
                 case 17:
-                    System.out.println(manager.getHistory());
-
-
+                        System.out.println(manager.getHistory());
             }
         }
     }
@@ -253,8 +241,6 @@ public class Main {
             System.out.println("15 - Удалить подзадачу по ID");
             System.out.println("16 - Распечатать полный список задач, эпиков и подзадач");
             System.out.println("17 - Историю запросов");
-
-
             System.out.println("exit - Выход");
 
             try {

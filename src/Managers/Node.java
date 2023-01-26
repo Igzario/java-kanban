@@ -1,11 +1,12 @@
 package Managers;
+import Tasks.Task;
 
-class Node<Task> {
+public class Node {
     protected Task data;
-    protected Node<Task> next;
-    protected Node<Task> prev;
+    protected Node next;
+    protected Node prev;
 
-    public Node(Node<Task> prev, Task data, Node<Task> next) {
+    public Node(Node prev, Task data, Node next) {
         this.data = data;
         this.next = next;
         this.prev = prev;

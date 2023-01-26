@@ -2,7 +2,11 @@ package Tasks;
 
 public class Subtask extends Task {
 
-    public int idEpic ;
+    private int idEpic ;
+
+    public int getIdEpic() {
+        return idEpic;
+    }
 
     public Subtask(int id, String name, String opisanie, int epic) {
         super(id, name, opisanie);

@@ -2,10 +2,19 @@ package Tasks;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    public ArrayList<Subtask> epicSubTasksList;
+    private ArrayList<Subtask> epicSubTasksList;
+
     public Epic(int id, String name, String opisanie) {
         super(id, name, opisanie);
         epicSubTasksList = new ArrayList<>();
+    }
+
+    public ArrayList<Subtask> getEpicSubTasksList() {
+        return epicSubTasksList;
+    }
+
+    public void setEpicSubTasksList(ArrayList<Subtask> epicSubTasksList) {
+        this.epicSubTasksList = epicSubTasksList;
     }
 
     public void refreshStatus() {
@@ -14,22 +23,22 @@ public class Epic extends Task {
         int countProgress = 0;
 
         for (Subtask o : this.epicSubTasksList) {
-            if (o.status== Status.NEW) {
+            if (o.getStatus()== Status.NEW) {
                 countNew++;
             }
-            if (o.status==Status.DONE) {
+            if (o.getStatus()==Status.DONE) {
                 countDone++;
             }
-            if (o.status==Status.IN_PROGRESS) {
+            if (o.getStatus()==Status.IN_PROGRESS) {
                 countProgress++;
             }
         }
         if (countDone == 0 && countProgress == 0 && countNew > 0) {
-            this.status = Status.NEW;
+            this.setStatus(Status.NEW);
         } else if (countDone > 0 && countProgress == 0 && countNew == 0) {
-            this.status = Status.DONE;
+            this.setStatus(Status.DONE);
         } else {
-            this.status = Status.IN_PROGRESS;
+            this.setStatus(Status.IN_PROGRESS);
         }
     }
 }

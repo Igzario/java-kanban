@@ -6,35 +6,35 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private Node<Task> tail;
+    private Node head;
     private int size = 0;
 
     private final HashMap<Integer, Node> hashHistory = new HashMap<>();
 
     public void linkLast(Task task) {
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<Task>(oldTail, task, null);
-        tail = newNode;
+        final Node oldTail = head;
+        final Node newNode = new Node(null, task, oldTail);
+        head = newNode;
         if (oldTail == null) {
-            tail = newNode;
+            head = newNode;
         } else
-            oldTail.next = newNode;
+            oldTail.prev = newNode;
         size++;
     }
 
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        if (tail.data != null) {
-            Node<Task> check = tail;
+        if (head !=null && head.data != null) {
+            Node check = head;
             for (int i = 0; i < size; i++) {
-                if (check != null && check.data != null && check.prev != null) {
-                    check = check.prev;
+                if (check != null && check.data != null && check.next != null) {
+                    check = check.next;
                 }
             }
             for (int i = 0; i < size; i++) {
                 if (check != null && check.data != null) {
                     tasks.add(check.data);
-                    check = check.next;
+                    check = check.prev;
                 }
             }
         }
@@ -43,27 +43,30 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void removeNode(Node node) {
         if (node != null) {
-            Node<Task> check = tail;
+            Node check = head;
             for (int i = 0; i < size; i++) {
-                if (check == node && check.prev == null && check.next == null) {
+                if (check == node && check.next == null && check.prev == null) {
                     check.data = null;
                     size--;
+                    return;
+                } else if (check == node && check.next == null) {
+                    check.data = null;
+                    size--;
+                    check.prev.next = null;
                     return;
                 } else if (check == node && check.prev == null) {
                     check.data = null;
                     size--;
-                    check.next.prev = null;
-                } else if (check == node && check.next == null) {
-                    check.data = null;
-                    size--;
-                    tail = check.prev;
+                    head = check.next;
+                    return;
                 } else if (check == node) {
-                    check.prev.next = check.next;
-                    check.data = null;
                     check.next.prev = check.prev;
+                    check.data = null;
+                    check.prev.next = check.next;
                     size--;
+                    return;
                 } else
-                    check = check.prev;
+                    check = check.next;
             }
         } else
             System.out.println("Удаление Node не возможно");
@@ -73,12 +76,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (task != null) {
-            if (hashHistory.containsKey(task.id)) {
-                removeNode(hashHistory.get(task.id));
+            if (hashHistory.containsKey(task.getId())) {
+                removeNode(hashHistory.get(task.getId()));
                 linkLast(task);
             } else {
                 linkLast(task);
-                hashHistory.put(task.id, tail);
+                hashHistory.put(task.getId(), head);
             }
         } else {
             System.out.println("Не добавлено");
@@ -89,11 +92,16 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         removeNode(hashHistory.get(id));
         hashHistory.remove(id);
+        if (size==0)
+        {
+            head =null;
+        }
+
     }
 
     @Override
     public List<Task> getHistory() {
-        return getTasks();
+            return getTasks();
     }
 
     @Override
@@ -102,7 +110,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         result.append("\nИстория запросов:");
         for (Task task : getTasks()) {
             result.append("\nНазвание: ");
-            result.append(task.name);
+            result.append(task.getName());
         }
         return result.toString();
     }

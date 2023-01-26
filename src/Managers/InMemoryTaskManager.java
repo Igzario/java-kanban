@@ -1,9 +1,7 @@
 package Managers;
-
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +51,9 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             Subtask subtask = new Subtask(idTask, name, description, idEpicSearch);
             subtaskHashMap.put(idTask, subtask);
-            epicHashMap.get(idEpicSearch).epicSubTasksList.add(subtask);
+            epicHashMap.get(idEpicSearch).getEpicSubTasksList().add(subtask);
             idTask++;
         }
-
     }
 
     @Override
@@ -80,41 +77,50 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpic() {
-        epicHashMap.clear();
+        final HashMap<Integer, Epic> hashMapEpicCopy= new HashMap<>(epicHashMap);
+        for (Epic epic: hashMapEpicCopy.values())
+        {
+            deleteEpicForId(epic.getId());
+        }
     }
 
     @Override
     public void clearTask() {
-        taskHashMap.clear();
+        final HashMap<Integer, Task> hashMapTaskCopy= new HashMap<>(taskHashMap);
+        for (Task task: hashMapTaskCopy.values())
+        {
+            deleteTaskForId(task.getId());
+        }
     }
 
     @Override
     public void clearSubtask() {
-        final HashMap<Integer, Subtask> subtaskHashMapToClear = new HashMap<>();
-        subtaskHashMapToClear.putAll(subtaskHashMap);
+        final HashMap<Integer, Subtask> subtaskHashMapToClear = new HashMap<>(subtaskHashMap);
         for (Subtask subtask : subtaskHashMapToClear.values()) {
-            deleteSubTaskForId(subtask.id);
+            deleteSubTaskForId(subtask.getId());
         }
-
     }
 
     @Override
     public void refreshTask(Task newTask) {
-        taskHashMap.put(newTask.id, newTask);
+        deleteTaskForId(newTask.getId());
+        taskHashMap.put(newTask.getId(), newTask);
     }
 
     @Override
     public void refreshSubTask(Subtask newSubtask) {
-        epicHashMap.get(newSubtask.idEpic).epicSubTasksList.remove(subtaskHashMap.get(newSubtask.id));
-        epicHashMap.get(newSubtask.idEpic).epicSubTasksList.add(newSubtask);
-        subtaskHashMap.put(newSubtask.id, newSubtask);
-        epicHashMap.get(newSubtask.idEpic).refreshStatus();
+        epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(newSubtask.getId()));
+        deleteSubTaskForId(newSubtask.getId());
+        epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().add(newSubtask);
+        subtaskHashMap.put(newSubtask.getId(), newSubtask);
+        epicHashMap.get(newSubtask.getIdEpic()).refreshStatus();
     }
 
     @Override
     public void refreshEpic(Epic newEpic) {
-        newEpic.epicSubTasksList = epicHashMap.get(newEpic.id).epicSubTasksList;
-        epicHashMap.put(newEpic.id, newEpic);
+        newEpic.setEpicSubTasksList(epicHashMap.get(newEpic.getId()).getEpicSubTasksList());
+        deleteEpicForId(newEpic.getId());
+        epicHashMap.put(newEpic.getId(), newEpic);
         newEpic.refreshStatus();
     }
 
@@ -133,8 +139,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtaskHashMap.containsKey(idDelete)) {
             System.out.println("Нет подзадачи с таким ID");
         } else {
-            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).epicSubTasksList.remove(subtaskHashMap.get(idDelete));
-            epicHashMap.get(subtaskHashMap.get(idDelete).idEpic).refreshStatus();
+            epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(idDelete));
+            epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).refreshStatus();
             subtaskHashMap.remove(idDelete);
             historyManager.remove(idDelete);
         }
@@ -145,10 +151,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epicHashMap.containsKey(idDelete)) {
             System.out.println("Нет Эпика с таким ID");
         } else {
-            for (Subtask subtask : epicHashMap.get(idDelete).epicSubTasksList) {
-                historyManager.remove(subtask.id);
-                subtaskHashMap.remove(subtask);
-
+            HashMap<Integer, Subtask> hashMapSubTaskCopy = new HashMap<>(subtaskHashMap);
+            for (Subtask subtask : hashMapSubTaskCopy.values()) {
+                deleteSubTaskForId(subtask.getId());
             }
         }
         epicHashMap.remove(idDelete);
@@ -162,7 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Subtask> getSubTasksForEpicId(int idEpic) {
-        return epicHashMap.get(idEpic).epicSubTasksList;
+        return epicHashMap.get(idEpic).getEpicSubTasksList();
     }
 
 
@@ -172,29 +177,29 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Task task : taskHashMap.values()) {
             result.append("\nID - ");
-            result.append(task.id);
+            result.append(task.getId());
             result.append(", Название - ");
-            result.append(task.name);
+            result.append(task.getName());
             result.append(", Статус - ");
-            result.append(task.status);
+            result.append(task.getStatus());
         }
         result.append("\n\nСписок Эпиков и подзадач: ");
         for (Epic epic : epicHashMap.values()) {
             result.append("\n=========================================");
             result.append("\nID - ");
-            result.append(epic.id);
+            result.append(epic.getId());
             result.append(", Название - ");
-            result.append(epic.name);
+            result.append(epic.getName());
             result.append(", Статус - ");
-            result.append(epic.status);
+            result.append(epic.getStatus());
             result.append("\nПодзадачи:");
-            for (Subtask subtask : epic.epicSubTasksList) {
+            for (Subtask subtask : epic.getEpicSubTasksList()) {
                 result.append("\nID - ");
-                result.append(subtask.id);
+                result.append(subtask.getId());
                 result.append(", Название - ");
-                result.append(subtask.name);
+                result.append(subtask.getName());
                 result.append(", Статус - ");
-                result.append(subtask.status);
+                result.append(subtask.getStatus());
             }
         }
         return result.toString();
