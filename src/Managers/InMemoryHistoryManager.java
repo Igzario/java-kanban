@@ -78,7 +78,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task != null) {
             if (hashHistory.containsKey(task.getId())) {
                 removeNode(hashHistory.get(task.getId()));
+                hashHistory.remove(task.getId());
                 linkLast(task);
+                hashHistory.put(task.getId(), head);
             } else {
                 linkLast(task);
                 hashHistory.put(task.getId(), head);
@@ -109,8 +111,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         StringBuilder result = new StringBuilder();
         result.append("\nИстория запросов:");
         for (Task task : getTasks()) {
-            result.append("\nНазвание: ");
-            result.append(task.getName());
+            result.append("\nНазвание: ")
+                    .append(task.getName());
         }
         return result.toString();
     }

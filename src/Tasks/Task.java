@@ -33,14 +33,14 @@ public class Task {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("\nID - ");
-        result.append(id);
-        result.append(", Название - ");
-        result.append(name);
-        result.append(", Описание  - ");
-        result.append(description);
-        result.append(", Статус - ");
-        result.append(status);
+        result.append("\nID - ")
+                .append(id)
+                .append(", Название - ")
+                .append(name)
+                .append(", Описание  - ")
+                .append(description)
+                .append(", Статус - ")
+                .append(status);
         return result.toString();
     }
 }

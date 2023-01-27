@@ -1,7 +1,9 @@
 package Managers;
+
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,18 +79,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpic() {
-        final HashMap<Integer, Epic> hashMapEpicCopy= new HashMap<>(epicHashMap);
-        for (Epic epic: hashMapEpicCopy.values())
-        {
+        final HashMap<Integer, Epic> hashMapEpicCopy = new HashMap<>(epicHashMap);
+        for (Epic epic : hashMapEpicCopy.values()) {
             deleteEpicForId(epic.getId());
         }
     }
 
     @Override
     public void clearTask() {
-        final HashMap<Integer, Task> hashMapTaskCopy= new HashMap<>(taskHashMap);
-        for (Task task: hashMapTaskCopy.values())
-        {
+        final HashMap<Integer, Task> hashMapTaskCopy = new HashMap<>(taskHashMap);
+        for (Task task : hashMapTaskCopy.values()) {
             deleteTaskForId(task.getId());
         }
     }
@@ -153,7 +153,9 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             HashMap<Integer, Subtask> hashMapSubTaskCopy = new HashMap<>(subtaskHashMap);
             for (Subtask subtask : hashMapSubTaskCopy.values()) {
-                deleteSubTaskForId(subtask.getId());
+                if (subtask.getIdEpic() == idDelete) {
+                    deleteSubTaskForId(subtask.getId());
+                }
             }
         }
         epicHashMap.remove(idDelete);
@@ -176,30 +178,30 @@ public class InMemoryTaskManager implements TaskManager {
         StringBuilder result = new StringBuilder("\n\nСписок задач:");
 
         for (Task task : taskHashMap.values()) {
-            result.append("\nID - ");
-            result.append(task.getId());
-            result.append(", Название - ");
-            result.append(task.getName());
-            result.append(", Статус - ");
-            result.append(task.getStatus());
+            result.append("\nID - ")
+                    .append(task.getId())
+                    .append(", Название - ")
+                    .append(task.getName())
+                    .append(", Статус - ")
+                    .append(task.getStatus());
         }
         result.append("\n\nСписок Эпиков и подзадач: ");
         for (Epic epic : epicHashMap.values()) {
-            result.append("\n=========================================");
-            result.append("\nID - ");
-            result.append(epic.getId());
-            result.append(", Название - ");
-            result.append(epic.getName());
-            result.append(", Статус - ");
-            result.append(epic.getStatus());
-            result.append("\nПодзадачи:");
+            result.append("\n=========================================")
+                    .append("\nID - ")
+                    .append(epic.getId())
+                    .append(", Название - ")
+                    .append(epic.getName())
+                    .append(", Статус - ")
+                    .append(epic.getStatus())
+                    .append("\nПодзадачи:");
             for (Subtask subtask : epic.getEpicSubTasksList()) {
-                result.append("\nID - ");
-                result.append(subtask.getId());
-                result.append(", Название - ");
-                result.append(subtask.getName());
-                result.append(", Статус - ");
-                result.append(subtask.getStatus());
+                result.append("\nID - ")
+                        .append(subtask.getId())
+                        .append(", Название - ")
+                        .append(subtask.getName())
+                        .append(", Статус - ")
+                        .append(subtask.getStatus());
             }
         }
         return result.toString();
