@@ -4,18 +4,24 @@
 
 // Про смысл перехода от "+" к append() я писал ранее) - понял, принял, осознал) поправил
 
+import Managers.FileBackedTasksManager;
 import Managers.Managers;
 import Managers.TaskManager;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+    public static void main(String[] args) throws IOException {
+        Path path = Paths.get("src\\test.csv");
+        //TaskManager manager = Managers.getDefault();
+        FileBackedTasksManager manager = new FileBackedTasksManager(path);
         Scanner scanner = new Scanner(System.in);
         while (true) {
             int userInput = printMenuAndRead(scanner);
@@ -201,6 +207,9 @@ public class Main {
                     continue;
                 case 17:
                         System.out.println(manager.getHistory());
+                case 18:
+                    manager.save();
+
             }
         }
     }
@@ -237,7 +246,7 @@ public class Main {
 
                     int userInputInt = Integer.parseInt(userInputString);
 
-                    if (userInputInt >= 1 && userInputInt <= 17) {
+                    if (userInputInt >= 1 && userInputInt <= 18) {
                         return userInputInt;
                     } else {
                         System.out.println("Не верная команда");

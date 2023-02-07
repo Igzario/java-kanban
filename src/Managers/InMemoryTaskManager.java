@@ -1,20 +1,18 @@
 package Managers;
-
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    private final HashMap<Integer, Task> taskHashMap = new HashMap<>();
-    private int idTask = 1;
+    protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
+    protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
+    protected int idTask = 1;
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public HashMap<Integer, Epic> getEpicHashMap() {
