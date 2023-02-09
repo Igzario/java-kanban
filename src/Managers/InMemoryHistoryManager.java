@@ -27,7 +27,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (head !=null && head.data != null) {
             Node check = head;
             for (int i = 0; i < size; i++) {
-                if (check != null && check.data != null && check.next != null) {
+                if (check.data != null && check.next != null) {
                     check = check.next;
                 }
             }

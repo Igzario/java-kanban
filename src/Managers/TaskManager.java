@@ -1,7 +1,10 @@
 package Managers;
+import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,35 +18,36 @@ public interface TaskManager {
 
     HashMap<Integer, Task> getTaskHashMap();
 
-    void newTask(String name, String description);
 
-    void newEpic(String name, String description);
+    void newTask(Task task) throws IOException, ManagerSaveException;
 
-    void newSubTask(String name, String description, int idEpicSearch);
+    void newEpic(Epic epic) throws IOException, ManagerSaveException;
 
-    Epic searchEpicForId(int idEpicSearch);
+    void newSubTask(Subtask subtask) throws IOException, ManagerSaveException;
 
-    Task searchTaskForId(int idTaskSearch);
+    Epic searchEpicForId(int idEpicSearch) throws IOException, ManagerSaveException;
 
-    Task searchSubtaskForId(int idSubtaskSearch);
+    Task searchTaskForId(int idTaskSearch) throws IOException, ManagerSaveException;
 
-    void clearEpic();
+    Task searchSubtaskForId(int idSubtaskSearch) throws IOException, ManagerSaveException;
 
-    void clearTask();
+    void clearEpic() throws IOException, ManagerSaveException;
 
-    void clearSubtask();
+    void clearTask() throws IOException, ManagerSaveException;
 
-    void refreshTask(Task newTask);
+    void clearSubtask() throws IOException, ManagerSaveException;
 
-    void refreshSubTask(Subtask newSubtask);
+    void refreshTask(Task newTask) throws IOException, ManagerSaveException;
 
-    void refreshEpic(Epic newEpic);
+    void refreshSubTask(Subtask newSubtask) throws IOException, ManagerSaveException;
 
-    void deleteTaskForId(int idDelete);
+    void refreshEpic(Epic newEpic) throws IOException, ManagerSaveException;
 
-    void deleteSubTaskForId(int idDelete);
+    void deleteTaskForId(int idDelete) throws IOException, ManagerSaveException;
 
-    void deleteEpicForId(int idDelete);
+    void deleteSubTaskForId(int idDelete) throws IOException, ManagerSaveException;
+
+    void deleteEpicForId(int idDelete) throws IOException, ManagerSaveException;
 
     List<Task> getHistory();
 

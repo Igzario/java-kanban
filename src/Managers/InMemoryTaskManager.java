@@ -1,7 +1,10 @@
 package Managers;
+import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
-    protected int idTask = 1;
+
 
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -30,53 +33,44 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void newTask(String name, String description) {
-        Task task = new Task(idTask, name, description);
-        taskHashMap.put(idTask, task);
-        idTask++;
+    public void newTask(Task task) throws IOException, ManagerSaveException {
+        taskHashMap.put(task.getId(), task);
+    }
+
+    @Override
+    public void newEpic(Epic epic) throws IOException, ManagerSaveException {
+        epicHashMap.put(epic.getId(), epic);
 
     }
 
     @Override
-    public void newEpic(String name, String description) {
-        Epic epic = new Epic(idTask, name, description);
-        epicHashMap.put(idTask, epic);
-        idTask++;
-    }
-
-    @Override
-    public void newSubTask(String name, String description, int idEpicSearch) {
-        if (!epicHashMap.containsKey(idEpicSearch)) {
-            System.out.println("Нет Эпика с таким ID");
-        } else {
-            Subtask subtask = new Subtask(idTask, name, description, idEpicSearch);
-            subtaskHashMap.put(idTask, subtask);
-            epicHashMap.get(idEpicSearch).getEpicSubTasksList().add(subtask);
-            idTask++;
+    public void newSubTask(Subtask subtask) throws IOException, ManagerSaveException {
+            subtaskHashMap.put(subtask.getId(), subtask);
+            epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
         }
-    }
+
 
     @Override
-    public Epic searchEpicForId(int idEpicSearch) {
+    public Epic searchEpicForId(int idEpicSearch) throws IOException, ManagerSaveException {
         historyManager.add(epicHashMap.get(idEpicSearch));
         return epicHashMap.get(idEpicSearch);
 
     }
 
     @Override
-    public Task searchTaskForId(int idTaskSearch) {
+    public Task searchTaskForId(int idTaskSearch) throws IOException, ManagerSaveException {
         historyManager.add(taskHashMap.get(idTaskSearch));
         return taskHashMap.get(idTaskSearch);
     }
 
     @Override
-    public Task searchSubtaskForId(int idSubtaskSearch) {
+    public Task searchSubtaskForId(int idSubtaskSearch) throws IOException, ManagerSaveException {
         historyManager.add(subtaskHashMap.get(idSubtaskSearch));
         return subtaskHashMap.get(idSubtaskSearch);
     }
 
     @Override
-    public void clearEpic() {
+    public void clearEpic() throws IOException, ManagerSaveException {
         final HashMap<Integer, Epic> hashMapEpicCopy = new HashMap<>(epicHashMap);
         for (Epic epic : hashMapEpicCopy.values()) {
             deleteEpicForId(epic.getId());
@@ -84,7 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearTask() {
+    public void clearTask() throws IOException, ManagerSaveException {
         final HashMap<Integer, Task> hashMapTaskCopy = new HashMap<>(taskHashMap);
         for (Task task : hashMapTaskCopy.values()) {
             deleteTaskForId(task.getId());
@@ -92,7 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearSubtask() {
+    public void clearSubtask() throws IOException, ManagerSaveException {
         final HashMap<Integer, Subtask> subtaskHashMapToClear = new HashMap<>(subtaskHashMap);
         for (Subtask subtask : subtaskHashMapToClear.values()) {
             deleteSubTaskForId(subtask.getId());
@@ -100,13 +94,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void refreshTask(Task newTask) {
+    public void refreshTask(Task newTask) throws IOException, ManagerSaveException {
         deleteTaskForId(newTask.getId());
         taskHashMap.put(newTask.getId(), newTask);
     }
 
     @Override
-    public void refreshSubTask(Subtask newSubtask) {
+    public void refreshSubTask(Subtask newSubtask) throws IOException, ManagerSaveException {
         epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(newSubtask.getId()));
         deleteSubTaskForId(newSubtask.getId());
         epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().add(newSubtask);
@@ -115,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void refreshEpic(Epic newEpic) {
+    public void refreshEpic(Epic newEpic) throws IOException, ManagerSaveException {
         newEpic.setEpicSubTasksList(epicHashMap.get(newEpic.getId()).getEpicSubTasksList());
         deleteEpicForId(newEpic.getId());
         epicHashMap.put(newEpic.getId(), newEpic);
@@ -123,7 +117,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskForId(int idDelete) {
+    public void deleteTaskForId(int idDelete) throws IOException, ManagerSaveException {
         if (!taskHashMap.containsKey(idDelete)) {
             System.out.println("Нет задачи с таким ID");
         } else {
@@ -133,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubTaskForId(int idDelete) {
+    public void deleteSubTaskForId(int idDelete) throws IOException, ManagerSaveException {
         if (!subtaskHashMap.containsKey(idDelete)) {
             System.out.println("Нет подзадачи с таким ID");
         } else {
@@ -145,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteEpicForId(int idDelete) {
+    public void deleteEpicForId(int idDelete) throws IOException, ManagerSaveException {
         if (!epicHashMap.containsKey(idDelete)) {
             System.out.println("Нет Эпика с таким ID");
         } else {

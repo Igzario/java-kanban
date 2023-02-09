@@ -1,12 +1,11 @@
-// вроде отловил этот баг, добавил перезапись в hashHistory при совпадении, это решило проблему
+// Вроде бы всё работает, но пришлось немного переделать создание тасков, не уверен, что правильно отработал по
+// исключениям.
+// В тз не написано, нужно ли добавлять новый менеджер в Managers
 
-// устранил еще один баг, при удалении одного эпика, удалялись вообще все подзадачи
 
-// Про смысл перехода от "+" к append() я писал ранее) - понял, принял, осознал) поправил
 
+import Exeptions.ManagerSaveException;
 import Managers.FileBackedTasksManager;
-import Managers.Managers;
-import Managers.TaskManager;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
@@ -18,10 +17,12 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        Path path = Paths.get("src\\test.csv");
+    public static void main(String[] args) throws IOException, ManagerSaveException {
+        Path path = Paths.get("src\\BackUpTasksManager.csv");
         //TaskManager manager = Managers.getDefault();
         FileBackedTasksManager manager = new FileBackedTasksManager(path);
+        int schetchikTask = 1;
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             int userInput = printMenuAndRead(scanner);
@@ -38,7 +39,9 @@ public class Main {
                     String nameTask = scanner1.nextLine();
                     System.out.println("Введите описание задачи");
                     String opisanieTask = scanner2.nextLine();
-                    manager.newTask(nameTask, opisanieTask);
+                    Task newTask = new Task(schetchikTask, nameTask, opisanieTask, Status.NEW);
+                    schetchikTask++;
+                    manager.newTask(newTask);
                     System.out.println("Готово");
                     continue;
                 case 2:
@@ -46,7 +49,9 @@ public class Main {
                     String nameEpic = scanner1.nextLine();
                     System.out.println("Введите описание Эпика");
                     String opisanieEpic = scanner2.nextLine();
-                    manager.newEpic(nameEpic, opisanieEpic);
+                    Epic newEpic = new Epic(schetchikTask, nameEpic, opisanieEpic, Status.NEW);
+                    schetchikTask++;
+                    manager.newEpic(newEpic);
                     System.out.println("Готово");
                     continue;
                 case 3:
@@ -57,12 +62,13 @@ public class Main {
                     System.out.println(manager.getEpicHashMap());
                     System.out.println("Введите ID Эпика");
                     int idEpic = scanner3.nextInt();
-                    manager.newSubTask(nameSubTask, opisanieSubTask, idEpic);
+                    Subtask newSubtask = new Subtask(schetchikTask, nameSubTask, opisanieSubTask, Status.NEW, idEpic);
+                    schetchikTask++;
+                    manager.newSubTask(newSubtask);
                     System.out.println("Готово");
                     continue;
                 case 4:
                     System.out.println("Введите ID целевой задачи");
-
                     int idTask = scanner1.nextInt();
                     if (manager.getTaskHashMap().containsKey(idTask)) {
                         System.out.println("Введите новое название задачи:");
@@ -129,20 +135,20 @@ public class Main {
                         System.out.println("Выберите новый статус подзадачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
                         int statusNewSubTask = scanner4.nextInt();
                         int idEpicSub = manager.getSubtaskHashMap().get(idNewSubTask).getIdEpic();
-                        Subtask subtask = new Subtask(idNewSubTask, newNameSubTask, newOpisanieSubTask, idEpicSub);
+                        Subtask subtaskNew = new Subtask(idNewSubTask, newNameSubTask, newOpisanieSubTask, idEpicSub);
                         if (statusNewSubTask == 1) {
-                            subtask.setStatus(Status.NEW);
+                            subtaskNew.setStatus(Status.NEW);
                             System.out.println("Готово");
                         }
                         if (statusNewSubTask == 2) {
-                            subtask.setStatus(Status.IN_PROGRESS);
+                            subtaskNew.setStatus(Status.IN_PROGRESS);
                             System.out.println("Готово");
                         }
                         if (statusNewSubTask == 3) {
-                            subtask.setStatus(Status.DONE);
+                            subtaskNew.setStatus(Status.DONE);
                             System.out.println("Готово");
                         }
-                        manager.refreshSubTask(subtask);
+                        manager.refreshSubTask(subtaskNew);
                         continue;
                     } else {
                         System.out.println("Такой задачи нет");
@@ -209,7 +215,10 @@ public class Main {
                         System.out.println(manager.getHistory());
                 case 18:
                     manager.save();
-
+                    System.out.println("Готово");
+                case 19:
+                    manager = manager.loadFromFile(path);
+                    System.out.println("Готово");
             }
         }
     }
@@ -236,6 +245,8 @@ public class Main {
             System.out.println("15 - Удалить подзадачу по ID");
             System.out.println("16 - Распечатать полный список задач, эпиков и подзадач");
             System.out.println("17 - Историю запросов");
+            System.out.println("18 - Выгрузить в файл");
+            System.out.println("19 - Загрузить из файла файл");
             System.out.println("exit - Выход");
 
             try {
@@ -246,7 +257,7 @@ public class Main {
 
                     int userInputInt = Integer.parseInt(userInputString);
 
-                    if (userInputInt >= 1 && userInputInt <= 18) {
+                    if (userInputInt >= 1 && userInputInt <= 19) {
                         return userInputInt;
                     } else {
                         System.out.println("Не верная команда");
