@@ -72,7 +72,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             System.out.println("Удаление Node не возможно");
     }
 
-
     @Override
     public void add(Task task) {
         if (task != null) {
@@ -98,7 +97,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         {
             head =null;
         }
-
     }
 
     @Override

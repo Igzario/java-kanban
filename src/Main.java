@@ -1,9 +1,9 @@
-// Вроде бы всё работает, но пришлось немного переделать создание тасков, не уверен, что правильно отработал по
-// исключениям.
-// В тз не написано, нужно ли добавлять новый менеджер в Managers
+// все замечания учёл, по исключению вроде сделал как надо, лишние убрал
 
+// реализацию мейн менять не хочется, так как-то удобнее тестировать всё это. На программу в целом же это не влияет.
 
-
+// сеттеры сделал, но они нигде не используются, если только будут в дальнейшем
+import Managers.Managers;
 import Exeptions.ManagerSaveException;
 import Managers.FileBackedTasksManager;
 import Tasks.Epic;
@@ -11,6 +11,7 @@ import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -19,8 +20,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, ManagerSaveException {
         Path path = Paths.get("src\\BackUpTasksManager.csv");
-        //TaskManager manager = Managers.getDefault();
-        FileBackedTasksManager manager = new FileBackedTasksManager(path);
+        FileBackedTasksManager manager = Managers.getDefault(path);
         int schetchikTask = 1;
 
         Scanner scanner = new Scanner(System.in);
@@ -212,17 +212,23 @@ public class Main {
                     System.out.println(manager);
                     continue;
                 case 17:
-                        System.out.println(manager.getHistory());
+                    System.out.println(manager.getHistory());
+                    continue;
                 case 18:
-                    manager.save();
-                    System.out.println("Готово");
-                case 19:
                     manager = manager.loadFromFile(path);
-                    System.out.println("Готово");
+                    String str = Files.readString(path);
+                    String[] strMassiv = str.split("\n");
+                    System.out.println("\nДанные из бэкапа:");
+                    for (String s : strMassiv) {
+                        System.out.println(s);
+                    }
+                    System.out.println("\nДанные из менеджера:");
+                    System.out.println(manager);
+                    System.out.println("\nИстория запросов:");
+                    System.out.println(manager.getHistory());
             }
         }
     }
-
 
     static int printMenuAndRead(Scanner scanner) {
         String userInputString;
@@ -245,8 +251,7 @@ public class Main {
             System.out.println("15 - Удалить подзадачу по ID");
             System.out.println("16 - Распечатать полный список задач, эпиков и подзадач");
             System.out.println("17 - Историю запросов");
-            System.out.println("18 - Выгрузить в файл");
-            System.out.println("19 - Загрузить из файла файл");
+            System.out.println("18 - Загрузить из файла файл");
             System.out.println("exit - Выход");
 
             try {
@@ -257,7 +262,7 @@ public class Main {
 
                     int userInputInt = Integer.parseInt(userInputString);
 
-                    if (userInputInt >= 1 && userInputInt <= 19) {
+                    if (userInputInt >= 1 && userInputInt <= 18) {
                         return userInputInt;
                     } else {
                         System.out.println("Не верная команда");

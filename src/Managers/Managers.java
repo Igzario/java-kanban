@@ -4,8 +4,8 @@ import java.nio.file.Path;
 
 public class Managers {
 
-    public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+    public static FileBackedTasksManager getDefault(Path path) {
+        return new FileBackedTasksManager(path);
     }
 
     public static HistoryManager getDefaultHistory() {

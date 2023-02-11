@@ -7,6 +7,7 @@ public class Task {
     private String description;
     private Status status;
 
+
     public Task(int id, String name, String discription) {
         this.id = id;
         this.name = name;
@@ -20,9 +21,6 @@ public class Task {
         this.description = discription;
         this.status = status;
     }
-
-
-
 
     public int getId() {
         return id;
@@ -43,6 +41,12 @@ public class Task {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public void setId(int id) { this.id = id; }
+
+    public void setName(String name) { this.name = name; }
+
+    public void setDescription(String description) { this.description = description; }
 
     @Override
     public String toString() {

@@ -6,4 +6,7 @@ public class ManagerSaveException extends Exception{
         super(message);
     }
 
+    public ManagerSaveException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

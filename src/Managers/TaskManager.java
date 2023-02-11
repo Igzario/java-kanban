@@ -3,7 +3,6 @@ import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +10,11 @@ import java.util.List;
 
 public interface TaskManager {
 
-
     HashMap<Integer, Epic> getEpicHashMap();
 
     HashMap<Integer, Subtask> getSubtaskHashMap();
 
     HashMap<Integer, Task> getTaskHashMap();
-
 
     void newTask(Task task) throws IOException, ManagerSaveException;
 
@@ -52,5 +49,4 @@ public interface TaskManager {
     List<Task> getHistory();
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
-
 }
