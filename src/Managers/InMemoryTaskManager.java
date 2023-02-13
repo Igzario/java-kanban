@@ -11,7 +11,6 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
 
-
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
@@ -37,21 +36,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void newEpic(Epic epic) {
         epicHashMap.put(epic.getId(), epic);
-
     }
 
     @Override
     public void newSubTask(Subtask subtask) {
-            subtaskHashMap.put(subtask.getId(), subtask);
-            epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
-        }
-
+        subtaskHashMap.put(subtask.getId(), subtask);
+        epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+    }
 
     @Override
     public Epic searchEpicForId(int idEpicSearch) {
         historyManager.add(epicHashMap.get(idEpicSearch));
         return epicHashMap.get(idEpicSearch);
-
     }
 
     @Override
@@ -67,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearEpic(){
+    public void clearEpic() {
         final HashMap<Integer, Epic> hashMapEpicCopy = new HashMap<>(epicHashMap);
         for (Epic epic : hashMapEpicCopy.values()) {
             deleteEpicForId(epic.getId());
@@ -114,7 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskForId(int idDelete){
+    public void deleteTaskForId(int idDelete) {
         if (!taskHashMap.containsKey(idDelete)) {
             System.out.println("Нет задачи с таким ID");
         } else {
@@ -161,7 +157,6 @@ public class InMemoryTaskManager implements TaskManager {
         return epicHashMap.get(idEpic).getEpicSubTasksList();
     }
 
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("\nСписок задач:");
@@ -195,6 +190,4 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return result.toString();
     }
-
-
 }

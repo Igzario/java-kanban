@@ -16,35 +16,35 @@ public interface TaskManager {
 
     HashMap<Integer, Task> getTaskHashMap();
 
-    void newTask(Task task) throws IOException, ManagerSaveException;
+    void newTask(Task task);
 
-    void newEpic(Epic epic) throws IOException, ManagerSaveException;
+    void newEpic(Epic epic);
 
-    void newSubTask(Subtask subtask) throws IOException, ManagerSaveException;
+    void newSubTask(Subtask subtask);
 
-    Epic searchEpicForId(int idEpicSearch) throws IOException, ManagerSaveException;
+    Epic searchEpicForId(int idEpicSearch);
 
-    Task searchTaskForId(int idTaskSearch) throws IOException, ManagerSaveException;
+    Task searchTaskForId(int idTaskSearch);
 
-    Task searchSubtaskForId(int idSubtaskSearch) throws IOException, ManagerSaveException;
+    Task searchSubtaskForId(int idSubtaskSearch);
 
-    void clearEpic() throws IOException, ManagerSaveException;
+    void clearEpic();
 
-    void clearTask() throws IOException, ManagerSaveException;
+    void clearTask();
 
-    void clearSubtask() throws IOException, ManagerSaveException;
+    void clearSubtask();
 
-    void refreshTask(Task newTask) throws IOException, ManagerSaveException;
+    void refreshTask(Task newTask);
 
-    void refreshSubTask(Subtask newSubtask) throws IOException, ManagerSaveException;
+    void refreshSubTask(Subtask newSubtask);
 
-    void refreshEpic(Epic newEpic) throws IOException, ManagerSaveException;
+    void refreshEpic(Epic newEpic);
 
-    void deleteTaskForId(int idDelete) throws IOException, ManagerSaveException;
+    void deleteTaskForId(int idDelete);
 
-    void deleteSubTaskForId(int idDelete) throws IOException, ManagerSaveException;
+    void deleteSubTaskForId(int idDelete);
 
-    void deleteEpicForId(int idDelete) throws IOException, ManagerSaveException;
+    void deleteEpicForId(int idDelete);
 
     List<Task> getHistory();
 
