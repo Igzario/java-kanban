@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private Path path;
 
-    public FileBackedTasksManager() {
+    public FileBackedTasksManager(Path path) {
+        this.path = path;
     }
 
     public Path getPath() {
@@ -28,39 +28,37 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) throws IOException {
 
-        Path path = Paths.get("src\\BackUpTasksManager.csv");
         FileBackedTasksManager manager = Managers.getDefault();
-        manager.setPath(path);
 
-        manager.newTask(new Task(1, "Задача1", "Очень важная задача1", Status.NEW));
-        manager.newTask(new Task(2, "Задача1", "Очень важная задача2", Status.NEW));
-        manager.newTask(new Task(3, "Задача3", "Очень важная задача3", Status.NEW));
+//        manager.newTask(new Task( "Задача1", "Очень важная задача1", Status.NEW));
+//        manager.newTask(new Task( "Задача1", "Очень важная задача2", Status.NEW));
+//        manager.newTask(new Task( "Задача3", "Очень важная задача3", Status.NEW));
+//
+//        manager.newEpic(new Epic( "Эпик4", "Очень важный эпик4", Status.NEW));
+//        manager.newEpic(new Epic( "Эпик5", "Очень важный эпик5", Status.NEW));
+//        manager.newEpic(new Epic( "Эпик6", "Очень важный эпик6", Status.NEW));
+//
+//        manager.newSubTask(new Subtask( "Подзадача7", "Очень важная подзадача7", Status.NEW, 4));
+//        manager.newSubTask(new Subtask( "Подзадача8", "Очень важная подзадача8", Status.NEW, 4));
+//        manager.newSubTask(new Subtask( "Подзадача9", "Очень важная подзадача9", Status.NEW, 5));
+//        manager.newSubTask(new Subtask( "Подзадача8", "Очень важная подзадача8", Status.NEW, 5));
+//        manager.newSubTask(new Subtask( "Подзадача11", "Очень важная подзадача11", Status.NEW, 6));
+//
+//        manager.searchTaskForId(2);
+//        manager.searchTaskForId(3);
+//        manager.searchTaskForId(1);
+//        manager.searchSubtaskForId(9);
+//        manager.searchSubtaskForId(11);
+//        manager.searchEpicForId(5);
+//        manager.searchEpicForId(4);
+//        manager.searchSubtaskForId(7);
+//        manager.searchSubtaskForId(8);
+//        manager.searchEpicForId(6);
+//        manager.searchSubtaskForId(10);
 
-        manager.newEpic(new Epic(4, "Эпик4", "Очень важный эпик4", Status.NEW));
-        manager.newEpic(new Epic(5, "Эпик5", "Очень важный эпик5", Status.NEW));
-        manager.newEpic(new Epic(6, "Эпик6", "Очень важный эпик6", Status.NEW));
+        manager = manager.loadFromFile(manager.getPath());
 
-        manager.newSubTask(new Subtask(7, "Подзадача7", "Очень важная подзадача7", Status.NEW, 4));
-        manager.newSubTask(new Subtask(8, "Подзадача8", "Очень важная подзадача8", Status.NEW, 4));
-        manager.newSubTask(new Subtask(9, "Подзадача9", "Очень важная подзадача9", Status.NEW, 5));
-        manager.newSubTask(new Subtask(10, "Подзадача8", "Очень важная подзадача8", Status.NEW, 5));
-        manager.newSubTask(new Subtask(11, "Подзадача11", "Очень важная подзадача11", Status.NEW, 6));
-
-        manager.searchTaskForId(2);
-        manager.searchTaskForId(3);
-        manager.searchTaskForId(1);
-        manager.searchSubtaskForId(9);
-        manager.searchSubtaskForId(11);
-        manager.searchEpicForId(5);
-        manager.searchEpicForId(4);
-        manager.searchSubtaskForId(7);
-        manager.searchSubtaskForId(8);
-        manager.searchEpicForId(6);
-        manager.searchSubtaskForId(10);
-
-        manager = manager.loadFromFile(path);
-
-        String str = Files.readString(path);
+        String str = Files.readString(manager.getPath());
         String[] strMassiv = str.split("\n");
         System.out.println("\nДанные из бэкапа:");
         for (String s : strMassiv) {
@@ -100,7 +98,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public FileBackedTasksManager loadFromFile(Path file) {
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
+        FileBackedTasksManager fileBackedTasksManager = Managers.getDefault();
         fileBackedTasksManager.setPath(file);
         try {
             String str = Files.readString(file);
@@ -133,6 +131,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                 }
             }
+            fileBackedTasksManager.idTasks= this.idTasks;
         } catch (IOException e) {
             try {
                 throw new ManagerSaveException("Ошибка сохранения", e.getCause());
@@ -150,38 +149,47 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case "subtask":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.NEW, Integer.parseInt(split[5]));
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Subtask(idTasks, split[2], split[4], Status.NEW, Integer.parseInt(split[5]));
                         break;
                     case "IN_PROGRESS":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS, Integer.parseInt(split[5]));
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Subtask(idTasks, split[2], split[4], Status.IN_PROGRESS, Integer.parseInt(split[5]));
                         break;
                     case "DONE":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.DONE, Integer.parseInt(split[5]));
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Subtask(idTasks, split[2], split[4], Status.DONE, Integer.parseInt(split[5]));
                 }
                 break;
             case "task":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Task(idTasks, split[2], split[4], Status.NEW);
                         break;
                     case "IN_PROGRESS":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Task(idTasks, split[2], split[4], Status.IN_PROGRESS);
                         break;
                     case "DONE":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Task(idTasks, split[2], split[4], Status.DONE);
                         break;
                 }
                 break;
             case "epic":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Epic(idTasks, split[2], split[4], Status.NEW);
                         break;
                     case "IN_PROGRESS":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Epic(idTasks, split[2], split[4], Status.IN_PROGRESS);
                         break;
                     case "DONE":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
+                        checkId(Integer.parseInt(split[0]));
+                        task = new Epic(idTasks, split[2], split[4], Status.DONE);
                         break;
                 }
                 break;
@@ -215,22 +223,47 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    @Override
-    public void newTask(Task task) {
-        super.newTask(task);
-        save();
+    public void checkId(int i){
+
+        if (idTasks>=i)
+        {
+            idTasks++;
+        }
+        else
+        {
+            idTasks=i;
+        }
     }
 
     @Override
-    public void newEpic(Epic epic) {
-        super.newEpic(epic);
+    public int newTask(Task task) {
+        int id = idTasks;
+        idTasks++;
+        task.setId(id);
+        taskHashMap.put(id, task);
         save();
+        return id;
     }
 
     @Override
-    public void newSubTask(Subtask subtask) {
-        super.newSubTask(subtask);
+    public int newEpic(Epic epic) {
+        int id = idTasks;
+        idTasks++;
+        epic.setId(id);
+        epicHashMap.put(id, epic);
         save();
+        return id;
+    }
+
+    @Override
+    public int newSubTask(Subtask subtask) {
+        int id = idTasks;
+        idTasks++;
+        subtask.setId(id);
+        subtaskHashMap.put(id, subtask);
+        epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        save();
+        return id;
     }
 
     @Override

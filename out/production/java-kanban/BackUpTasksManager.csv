@@ -1,8 +1,3 @@
 id,type,name,status,description,epic
-1,task,пророрпук,NEW,пукпукпук,
-2,task,пукпукпукорено,NEW,2,
-3,epic,лгнлгн,NEW,неоен,
-4,subtask,лгнль,NEW,онео,3
-5,subtask,отнрел,NEW,гнро,3
+1,epic,Test addNewEpic,NEW,Epic addNewTask description,
 
-1,2,3,4,5

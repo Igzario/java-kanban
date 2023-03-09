@@ -1,26 +1,24 @@
 package Managers;
-import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
 
-    HashMap<Integer, Epic> getEpicHashMap();
+    List<Epic> getEpics();
 
-    HashMap<Integer, Subtask> getSubtaskHashMap();
+    List<Subtask> getSubTasks();
 
-    HashMap<Integer, Task> getTaskHashMap();
+    List<Task> getTasks();
 
-    void newTask(Task task);
+    int newTask(Task task);
 
-    void newEpic(Epic epic);
+    int newEpic(Epic epic);
 
-    void newSubTask(Subtask subtask);
+    int newSubTask(Subtask subtask);
 
     Epic searchEpicForId(int idEpicSearch);
 

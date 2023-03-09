@@ -7,19 +7,18 @@ public class Task {
     private String description;
     private Status status;
 
-    public Task(int id, String name, String discription) {
-        this.id = id;
-        this.name = name;
-        this.description = discription;
-        this.status = Status.NEW;
-    }
-
     public Task(int id, String name, String discription, Status status) {
         this.id = id;
         this.name = name;
         this.description = discription;
         this.status = status;
     }
+    public Task( String name, String discription, Status status) {
+        this.name = name;
+        this.description = discription;
+        this.status = status;
+    }
+
 
     public int getId() {
         return id;
@@ -41,11 +40,17 @@ public class Task {
         this.status = status;
     }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public String toString() {

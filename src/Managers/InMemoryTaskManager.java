@@ -10,56 +10,87 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
     protected final HashMap<Integer, Task> taskHashMap = new HashMap<>();
-
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int idTasks =1;
+
+    public int getIdTasks() {
+        return idTasks;
+    }
+
+    public void setIdTasks(int idTasks) {
+        this.idTasks = idTasks;
+    }
+
+
 
     @Override
-    public HashMap<Integer, Epic> getEpicHashMap() {
-        return epicHashMap;
+    public List<Epic> getEpics() {
+        return new ArrayList<Epic>(epicHashMap.values());
     }
 
     @Override
-    public HashMap<Integer, Subtask> getSubtaskHashMap() {
-        return subtaskHashMap;
+    public List<Subtask> getSubTasks() {
+        return new ArrayList<Subtask>(subtaskHashMap.values());
     }
 
     @Override
-    public HashMap<Integer, Task> getTaskHashMap() {
-        return taskHashMap;
+    public List<Task> getTasks() {
+        return new ArrayList<Task>(taskHashMap.values());
     }
 
     @Override
-    public void newTask(Task task) {
-        taskHashMap.put(task.getId(), task);
+    public int newTask(Task task) {
+        int id = idTasks;
+        idTasks++;
+        task.setId(id);
+        taskHashMap.put(id, task);
+        return id;
     }
 
     @Override
-    public void newEpic(Epic epic) {
-        epicHashMap.put(epic.getId(), epic);
+    public int newEpic(Epic epic) {
+        int id = idTasks;
+        idTasks++;
+        epic.setId(id);
+        epicHashMap.put(id, epic);
+        return id;
     }
 
     @Override
-    public void newSubTask(Subtask subtask) {
-        subtaskHashMap.put(subtask.getId(), subtask);
+    public int newSubTask(Subtask subtask) {
+        int id = idTasks;
+        idTasks++;
+        subtask.setId(id);
+        subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        return id;
     }
 
     @Override
     public Epic searchEpicForId(int idEpicSearch) {
-        historyManager.add(epicHashMap.get(idEpicSearch));
-        return epicHashMap.get(idEpicSearch);
+        Epic epic = epicHashMap.get(idEpicSearch);
+        if (epic != null) {
+            historyManager.add(epicHashMap.get(idEpicSearch));
+        }
+        return epic;
     }
 
     @Override
     public Task searchTaskForId(int idTaskSearch) {
-        historyManager.add(taskHashMap.get(idTaskSearch));
-        return taskHashMap.get(idTaskSearch);
+        Task task = taskHashMap.get(idTaskSearch);
+        if (task != null) {
+            historyManager.add(taskHashMap.get(idTaskSearch));
+        }
+        return task;
     }
 
     @Override
     public Task searchSubtaskForId(int idSubtaskSearch) {
-        historyManager.add(subtaskHashMap.get(idSubtaskSearch));
-        return subtaskHashMap.get(idSubtaskSearch);
+        Subtask subtask = subtaskHashMap.get(idSubtaskSearch);
+        if (subtask != null) {
+            historyManager.add(subtaskHashMap.get(idSubtaskSearch));
+        }
+        return subtask;
     }
 
     @Override
@@ -88,8 +119,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void refreshTask(Task newTask) {
-        deleteTaskForId(newTask.getId());
-        taskHashMap.put(newTask.getId(), newTask);
+        if (newTask!=null){
+            deleteTaskForId(newTask.getId());
+            taskHashMap.put(newTask.getId(), newTask);
+        }
     }
 
     @Override

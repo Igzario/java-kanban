@@ -1,9 +1,11 @@
 package Managers;
 
+import java.nio.file.Paths;
+
 public class Managers {
 
     public static FileBackedTasksManager getDefault() {
-        return new FileBackedTasksManager();
+        return new FileBackedTasksManager(Paths.get("src\\BackUpTasksManager.csv"));
     }
 
     public static HistoryManager getDefaultHistory() {
