@@ -1,3 +1,4 @@
 id,type,name,status,description,epic
-1,epic,Test addNewEpic,NEW,Epic addNewTask description,
+1,task,Test addNewTask,NEW,Test addNewTask description,
 
+1

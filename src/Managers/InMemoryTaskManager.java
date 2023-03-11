@@ -127,19 +127,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void refreshSubTask(Subtask newSubtask) {
-        epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(newSubtask.getId()));
-        deleteSubTaskForId(newSubtask.getId());
-        epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().add(newSubtask);
-        subtaskHashMap.put(newSubtask.getId(), newSubtask);
-        epicHashMap.get(newSubtask.getIdEpic()).refreshStatus();
+        if (newSubtask!= null) {
+            epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(newSubtask.getId()));
+            deleteSubTaskForId(newSubtask.getId());
+            epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().add(newSubtask);
+            subtaskHashMap.put(newSubtask.getId(), newSubtask);
+            epicHashMap.get(newSubtask.getIdEpic()).refreshStatus();
+        }
     }
 
     @Override
     public void refreshEpic(Epic newEpic) {
-        newEpic.setEpicSubTasksList(epicHashMap.get(newEpic.getId()).getEpicSubTasksList());
-        deleteEpicForId(newEpic.getId());
-        epicHashMap.put(newEpic.getId(), newEpic);
-        newEpic.refreshStatus();
+        if (newEpic != null) {
+            newEpic.setEpicSubTasksList(epicHashMap.get(newEpic.getId()).getEpicSubTasksList());
+            deleteEpicForId(newEpic.getId());
+            epicHashMap.put(newEpic.getId(), newEpic);
+            newEpic.refreshStatus();
+        }
     }
 
     @Override

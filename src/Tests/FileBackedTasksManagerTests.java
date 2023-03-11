@@ -1,22 +1,24 @@
 package Tests;
-import Managers.InMemoryTaskManager;
-import Tasks.Status;
+import Managers.FileBackedTasksManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.nio.file.Paths;
 
 
-public class InMemoryTasksManagerTests extends TaskManagerTest {
+public class FileBackedTasksManagerTests extends TaskManagerTest {
 
     @BeforeEach
     @Override
     public void setTaskManager() {
-        taskManager = new InMemoryTaskManager();
+        taskManager = new FileBackedTasksManager(Paths.get("src\\BackUpTasksManager.csv"));
     }
 
     @Test
     @Override
     void testAddNewTask() {
         super.testAddNewTask();
+        FileBackedTasksManager g = ((FileBackedTasksManager) taskManager).loadFromFile(Paths.get("src\\BackUpTasksManager.csv"));
+
     }
 
     @Test
@@ -29,47 +31,6 @@ public class InMemoryTasksManagerTests extends TaskManagerTest {
     @Override
     void testAddNewSubTask() {
         super.testAddNewSubTask();
-    }
-
-    @Test
-    @Override
-    void addTasksEpicsSubtasks() {
-        super.addTasksEpicsSubtasks();
-    }
-
-    @Override
-    void refreshSubtasks(Status newStatus) {
-        super.refreshSubtasks(newStatus);
-    }
-
-    @Test
-    @Override
-    void testEpicSubTasksClear() {
-        super.testEpicSubTasksClear();
-    }
-
-    @Test
-    @Override
-    void testEpicSubTasksNew() {
-        super.testEpicSubTasksNew();
-    }
-
-    @Test
-    @Override
-    void testEpicSubTasksDone() {
-        super.testEpicSubTasksDone();
-    }
-
-    @Test
-    @Override
-    void testEpicSubTasksDoneAndNew() {
-        super.testEpicSubTasksDoneAndNew();
-    }
-
-    @Test
-    @Override
-    void testEpicSubTasksInProgress() {
-        super.testEpicSubTasksInProgress();
     }
 
     @Test
@@ -216,15 +177,4 @@ public class InMemoryTasksManagerTests extends TaskManagerTest {
         super.testDeleteEpicForIdWithIncorrectId();
     }
 
-    @Test
-    @Override
-    void testGetHistory() {
-        super.testGetHistory();
-    }
-
-    @Test
-    @Override
-    void testGetSubTasksForEpicId() {
-        super.testGetSubTasksForEpicId();
-    }
 }

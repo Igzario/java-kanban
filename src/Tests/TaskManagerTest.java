@@ -1,11 +1,11 @@
 package Tests;
-
 import Managers.TaskManager;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static Tasks.Status.*;
@@ -298,10 +298,144 @@ abstract class TaskManagerTest<T extends TaskManager> {
         savedEpicId1= taskManager.searchEpicForId(epicId);
         boolean subTaskInEpicList = savedEpicId1.getEpicSubTasksList().contains(newSubTask);
         assertEquals(newSubTask, savedSubTaskId2, "Задача не обновилась");
-        assertTrue(subTaskInEpicList, "Задача не найдена с спике у эпика");
+        assertTrue(subTaskInEpicList, "Задача не найдена в спике у эпика");
         assertEquals(savedEpicId1.getStatus(), IN_PROGRESS, "Статус эпика не NEW");
     }
 
+    void testRefreshSubTaskNull() {
+        addTasksEpicsSubtasks();
+        Subtask newSubTask = null;
+        assertEquals(savedEpicId1.getStatus(), NEW, "Статус эпика не NEW");
+
+        taskManager.refreshSubTask(newSubTask);
+        boolean isOk = taskManager.getSubTasks().contains(newSubTask);
+        assertFalse(isOk, "Ошибка");
+    }
+
+    void testRefreshEpic() {
+        addTasksEpicsSubtasks();
+        int epicId = savedEpicId1.getId();
+        Epic newEpic = new Epic(epicId, "Test epic", "TestRefreshEpic", savedEpicId1.getStatus());
+        taskManager.refreshEpic(newEpic);
+        savedEpicId1 = taskManager.searchEpicForId(epicId);
+        assertEquals(newEpic, savedEpicId1, "Эпик не обновился");
+    }
+
+    void testRefreshEpicNull() {
+        addTasksEpicsSubtasks();
+        Epic newEpic = null;
+        taskManager.refreshEpic(newEpic);
+        boolean isOk = taskManager.getEpics().contains(newEpic);
+        assertFalse(isOk, "Ошибка");
+    }
+
+    void testDeleteTaskForId(){
+        addTasksEpicsSubtasks();
+
+        boolean isOkTaskManager = taskManager.getTasks().contains(savedTaskId5);
+        taskManager.searchTaskForId(savedTaskId5.getId());
+        boolean isOkHistory = taskManager.getHistory().contains(savedTaskId5);
+        assertTrue(isOkTaskManager, "Ошибка");
+        assertTrue(isOkHistory, "Ошибка");
+
+        taskManager.deleteTaskForId(savedTaskId5.getId());
+        isOkTaskManager = taskManager.getTasks().contains(savedTaskId5);
+        isOkHistory = taskManager.getHistory().contains(savedTaskId5);
+        assertFalse(isOkTaskManager, "Ошибка3");
+        assertFalse(isOkHistory, "Ошибка4");
+    }
+
+    void testDeleteTaskForIdWithIncorrectId(){
+        addTasksEpicsSubtasks();
+        int sizeBefore = taskManager.getTasks().size();
+        taskManager.deleteTaskForId(100);
+        int sizeAfter = taskManager.getTasks().size();
+        assertEquals(sizeBefore, sizeAfter, "Размеры не совпадают");
+    }
+
+    void testDeleteSubTaskForId(){
+        addTasksEpicsSubtasks();
+
+        boolean isOkTaskManager = taskManager.getSubTasks().contains(savedSubTaskId2);
+        taskManager.searchSubtaskForId(savedSubTaskId2.getId());
+        boolean isOkHistory = taskManager.getHistory().contains(savedSubTaskId2);
+        assertTrue(isOkTaskManager, "Ошибка1");
+        assertTrue(isOkHistory, "Ошибка2");
+
+        taskManager.deleteSubTaskForId(savedSubTaskId2.getId());
+        isOkTaskManager = taskManager.getSubTasks().contains(savedSubTaskId2);
+        isOkHistory = taskManager.getHistory().contains(savedSubTaskId2);
+        assertFalse(isOkTaskManager, "Ошибка3");
+        assertFalse(isOkHistory, "Ошибка4");
+    }
+
+    void testDeleteSubTaskForIdWithIncorrectId(){
+        addTasksEpicsSubtasks();
+        int sizeBefore = taskManager.getSubTasks().size();
+        taskManager.deleteSubTaskForId(100);
+        int sizeAfter = taskManager.getSubTasks().size();
+        assertEquals(sizeBefore, sizeAfter, "Размеры не совпадают");
+    }
+
+    void testDeleteEpicForId(){
+        addTasksEpicsSubtasks();
+
+        boolean isOkTaskManager = taskManager.getEpics().contains(savedEpicId1);
+        taskManager.searchEpicForId(savedEpicId1.getId());
+        boolean isOkHistory = taskManager.getHistory().contains(savedEpicId1);
+        assertTrue(isOkTaskManager, "Ошибка1");
+        assertTrue(isOkHistory, "Ошибка2");
+
+        taskManager.deleteEpicForId(savedEpicId1.getId());
+        isOkTaskManager = taskManager.getEpics().contains(savedEpicId1);
+        isOkHistory = taskManager.getHistory().contains(savedEpicId1);
+        assertFalse(isOkTaskManager, "Ошибка3");
+        assertFalse(isOkHistory, "Ошибка4");
+    }
+
+    void testDeleteEpicForIdWithIncorrectId(){
+        addTasksEpicsSubtasks();
+        int sizeBefore = taskManager.getEpics().size();
+        taskManager.deleteEpicForId(100);
+        int sizeAfter = taskManager.getEpics().size();
+        assertEquals(sizeBefore, sizeAfter, "Размеры не совпадают");
+    }
 
 
-}
+    void testGetHistory(){
+        Task task = new Task("Test addNewTask1", "Test addNewTask description2", NEW);
+        final int taskId = taskManager.newTask(task);
+        Epic epic = new Epic("Test addNewEpic", "Epic addNewTask description", NEW);
+        final int epicId = taskManager.newEpic(epic);
+        Subtask subTask = new Subtask("Test addNewSubTask", "Test addNewSubTask description", NEW, epicId);
+        final int subTaskId = taskManager.newSubTask(subTask);
+
+        taskManager.searchTaskForId(taskId);
+        taskManager.searchSubtaskForId(subTaskId);
+        taskManager.searchEpicForId(epicId);
+
+        List<Task> listTasks = List.of(task, epic, subTask);
+        List<Task> listTasksFromTaskManager =taskManager.getHistory();
+        assertEquals(listTasks.size(), listTasksFromTaskManager.size(), "Размеры не совпадают");
+        boolean isOkHistory = listTasksFromTaskManager.contains(task);
+        assertTrue(isOkHistory, "Не найден Task");
+        isOkHistory = false;
+        isOkHistory = listTasksFromTaskManager.contains(subTask);
+        assertTrue(isOkHistory, "Не найден SubTask");
+        isOkHistory = false;
+        isOkHistory = listTasksFromTaskManager.contains(epic);
+        assertTrue(isOkHistory, "Не найден Epic");
+    }
+
+    void testGetSubTasksForEpicId(){
+        addTasksEpicsSubtasks();
+        ArrayList<Subtask> subtasksEpic =savedEpicId1.getEpicSubTasksList();
+        ArrayList<Subtask> subtasksTaskManager =  taskManager.getSubTasksForEpicId(savedEpicId1.getId());
+        assertEquals(subtasksEpic.size(), subtasksTaskManager.size(), "Размеры не совпадают");
+        boolean isOk = false;
+        for (Subtask subtask : subtasksEpic) {
+            isOk = subtasksTaskManager.contains(subtask);
+            assertTrue(isOk, "Не найден SubTask");
+        }
+    }
+    }

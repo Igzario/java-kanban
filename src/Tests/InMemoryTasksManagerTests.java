@@ -1,14 +1,9 @@
 package Tests;
-
 import Managers.InMemoryTaskManager;
-import Tasks.Epic;
 import Tasks.Status;
-import Tasks.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-import static Tasks.Status.NEW;
 
 public class InMemoryTasksManagerTests extends TaskManagerTest {
 
@@ -165,5 +160,71 @@ public class InMemoryTasksManagerTests extends TaskManagerTest {
     @Override
     void testRefreshSubTask() {
         super.testRefreshSubTask();
+    }
+
+    @Test
+    @Override
+    void testRefreshSubTaskNull() {
+        super.testRefreshSubTaskNull();
+    }
+
+    @Test
+    @Override
+    void testRefreshEpic() {
+        super.testRefreshEpic();
+    }
+
+    @Test
+    @Override
+    void testRefreshEpicNull() {
+        super.testRefreshEpicNull();
+    }
+
+    @Test
+    @Override
+    void testDeleteTaskForId() {
+        super.testDeleteTaskForId();
+    }
+
+    @Test
+    @Override
+    void testDeleteTaskForIdWithIncorrectId() {
+        super.testDeleteTaskForIdWithIncorrectId();
+    }
+
+    @Test
+    @Override
+    void testDeleteSubTaskForId() {
+        super.testDeleteSubTaskForId();
+    }
+
+    @Test
+    @Override
+    void testDeleteSubTaskForIdWithIncorrectId() {
+        super.testDeleteSubTaskForIdWithIncorrectId();
+    }
+
+    @Test
+    @Override
+    void testDeleteEpicForId() {
+        super.testDeleteEpicForId();
+    }
+
+    @Test
+    @Override
+    void testDeleteEpicForIdWithIncorrectId() {
+        super.testDeleteEpicForIdWithIncorrectId();
+    }
+
+    @Test
+    @Override
+    void testGetHistory() {
+        super.testGetHistory();
+    }
+
+    @Test
+    @Override
+    void testGetSubTasksForEpicId() {
+        super.testGetSubTasksForEpicId();
     }
 }
