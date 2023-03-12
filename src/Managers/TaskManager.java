@@ -5,8 +5,15 @@ import Tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
+
+    Map<Integer, Task> getTaskHashMap();
+
+    Map<Integer, Subtask> getSubtaskHashMap();
+
+    Map<Integer, Epic> getEpicHashMap();
 
     List<Epic> getEpics();
 
@@ -47,4 +54,7 @@ public interface TaskManager {
     List<Task> getHistory();
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
+
+
+
 }

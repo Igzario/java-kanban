@@ -9,7 +9,7 @@ public class InMemoryTasksManagerTests extends TaskManagerTest {
 
     @BeforeEach
     @Override
-    public void setTaskManager() {
+    void setTaskManager() {
         taskManager = new InMemoryTaskManager();
     }
 

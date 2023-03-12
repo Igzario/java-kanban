@@ -1,16 +1,21 @@
 package Managers;
+
 import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
+
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTaskManager {
+public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
 
     private Path path;
 
@@ -98,8 +103,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public FileBackedTasksManager loadFromFile(Path file) {
-        FileBackedTasksManager fileBackedTasksManager = Managers.getDefault();
-        fileBackedTasksManager.setPath(file);
+        FileBackedTasksManager fileBackedTasksManagerFromFile = Managers.getDefault();
+        fileBackedTasksManagerFromFile.setPath(file);
         try {
             String str = Files.readString(file);
             str = str.replace("id,type,name,status,description,epic\n", "");
@@ -108,38 +113,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 if (!strMassiv[i].equals("")) {
                     Task task = fromString(strMassiv[i]);
                     if (task.getClass() == Task.class) {
-                        fileBackedTasksManager.taskHashMap.put(task.getId(), task);
+                        fileBackedTasksManagerFromFile.taskHashMap.put(task.getId(), task);
+                        idTasks++;
                     } else if (task.getClass() == Epic.class) {
                         Epic epic = (Epic) task;
-                        fileBackedTasksManager.epicHashMap.put(epic.getId(), epic);
+                        fileBackedTasksManagerFromFile.epicHashMap.put(epic.getId(), epic);
+                        idTasks++;
                     } else if (task.getClass() == Subtask.class) {
                         Subtask subtask = (Subtask) task;
-                        fileBackedTasksManager.subtaskHashMap.put(subtask.getId(), subtask);
-                        fileBackedTasksManager.epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+                        fileBackedTasksManagerFromFile.subtaskHashMap.put(subtask.getId(), subtask);
+                        fileBackedTasksManagerFromFile.epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+                        idTasks++;
                     }
                 } else {
                     i++;
                     String[] strHistoryMassiv = strMassiv[i].split(",");
                     for (String s : strHistoryMassiv) {
-                        if (fileBackedTasksManager.taskHashMap.containsKey(Integer.parseInt(s))) {
-                            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.taskHashMap.get(Integer.parseInt(s)));
-                        } else if (fileBackedTasksManager.epicHashMap.containsKey(Integer.parseInt(s))) {
-                            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.epicHashMap.get(Integer.parseInt(s)));
-                        } else if (fileBackedTasksManager.subtaskHashMap.containsKey(Integer.parseInt(s))) {
-                            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.subtaskHashMap.get(Integer.parseInt(s)));
+                        if (fileBackedTasksManagerFromFile.taskHashMap.containsKey(Integer.parseInt(s))) {
+                            fileBackedTasksManagerFromFile.historyManager.add(fileBackedTasksManagerFromFile.taskHashMap.get(Integer.parseInt(s)));
+                        } else if (fileBackedTasksManagerFromFile.epicHashMap.containsKey(Integer.parseInt(s))) {
+                            fileBackedTasksManagerFromFile.historyManager.add(fileBackedTasksManagerFromFile.epicHashMap.get(Integer.parseInt(s)));
+                        } else if (fileBackedTasksManagerFromFile.subtaskHashMap.containsKey(Integer.parseInt(s))) {
+                            fileBackedTasksManagerFromFile.historyManager.add(fileBackedTasksManagerFromFile.subtaskHashMap.get(Integer.parseInt(s)));
                         }
                     }
                 }
             }
-            fileBackedTasksManager.idTasks= this.idTasks;
+
+            fileBackedTasksManagerFromFile.idTasks = this.idTasks;
         } catch (IOException e) {
-            try {
-                throw new ManagerSaveException("Ошибка сохранения", e.getCause());
-            } catch (ManagerSaveException exception) {
-                System.out.println(exception.getMessage() + exception.getCause());
-            }
+            throw new ManagerSaveException("Ошибка сохранения", e.getCause());
         }
-        return fileBackedTasksManager;
+        return fileBackedTasksManagerFromFile;
     }
 
     public Task fromString(String value) {
@@ -149,47 +154,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case "subtask":
                 switch (split[3]) {
                     case "NEW":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Subtask(idTasks, split[2], split[4], Status.NEW, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.NEW, Integer.parseInt(split[5]));
                         break;
                     case "IN_PROGRESS":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Subtask(idTasks, split[2], split[4], Status.IN_PROGRESS, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS, Integer.parseInt(split[5]));
                         break;
                     case "DONE":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Subtask(idTasks, split[2], split[4], Status.DONE, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.DONE, Integer.parseInt(split[5]));
                 }
                 break;
             case "task":
                 switch (split[3]) {
                     case "NEW":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Task(idTasks, split[2], split[4], Status.NEW);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
                         break;
                     case "IN_PROGRESS":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Task(idTasks, split[2], split[4], Status.IN_PROGRESS);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
                         break;
                     case "DONE":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Task(idTasks, split[2], split[4], Status.DONE);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
                         break;
                 }
                 break;
             case "epic":
                 switch (split[3]) {
                     case "NEW":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Epic(idTasks, split[2], split[4], Status.NEW);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
                         break;
                     case "IN_PROGRESS":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Epic(idTasks, split[2], split[4], Status.IN_PROGRESS);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
                         break;
                     case "DONE":
-                        checkId(Integer.parseInt(split[0]));
-                        task = new Epic(idTasks, split[2], split[4], Status.DONE);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
                         break;
                 }
                 break;
@@ -223,17 +219,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    public void checkId(int i){
-
-        if (idTasks>=i)
-        {
-            idTasks++;
-        }
-        else
-        {
-            idTasks=i;
+    public void clearHistory(){
+        for (Task task : getHistory()){
+            historyManager.remove(task.getId());
         }
     }
+
 
     @Override
     public int newTask(Task task) {
@@ -340,5 +331,54 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void deleteEpicForId(int idDelete) {
         super.deleteEpicForId(idDelete);
         save();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        FileBackedTasksManager test;
+        boolean isOk = false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj.getClass() == FileBackedTasksManager.class) {
+            test = (FileBackedTasksManager) obj;
+        } else {
+            return false;
+        }
+        if (this.taskHashMap.size() == test.taskHashMap.size() && this.subtaskHashMap.size() == test.subtaskHashMap.size()
+                && this.epicHashMap.size() == test.epicHashMap.size() && this.getHistory().size() == test.getHistory().size()) {
+            for (Task task : this.taskHashMap.values()) {
+                isOk = test.taskHashMap.containsKey(task.getId());
+                if (!isOk) {
+                    return false;
+                }
+            }
+            for (Subtask subTask : this.subtaskHashMap.values()) {
+                isOk = test.subtaskHashMap.containsKey(subTask.getId());
+                if (!isOk) {
+                    return false;
+                }
+            }
+            for (Epic epic : this.epicHashMap.values()) {
+                isOk = test.epicHashMap.containsKey(epic.getId());
+                if (!isOk) {
+                    return false;
+                }
+            }
+            for (Task task : this.getHistory()) {
+                List<Task> testArray = test.getHistory();
+                Task testTask = test.getHistory().get(task.getId()-1);
+                if (testTask == null) {
+                    return false;
+                }
+                if (task.getId() == testTask.getId()) {
+                    isOk=true;
+                }
+                if (!isOk) {
+                    return false;
+                }
+            }
+        }
+        return isOk;
     }
 }

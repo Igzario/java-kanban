@@ -1,23 +1,77 @@
 package Tests;
+import Managers.Managers;
 import Managers.FileBackedTasksManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.nio.file.Paths;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTasksManagerTests extends TaskManagerTest {
 
+
     @BeforeEach
     @Override
-    public void setTaskManager() {
-        taskManager = new FileBackedTasksManager(Paths.get("src\\BackUpTasksManager.csv"));
+    void setTaskManager() {
+        taskManager = Managers.getDefault();
     }
+
+    @Test
+    void testSaveAndLoad(){
+        addTasksEpicsSubtasks();
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+
+        FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
+
+        fBTManagerAfterLoad = fBTManagerAfterLoad.loadFromFile(fBTMFromTaskManager.getPath());
+
+        assertEquals(fBTMFromTaskManager, fBTManagerAfterLoad, "Не совпадают");
+    }
+
+    @Test
+    void testSaveAndLoadClearTasks(){
+        addTasksEpicsSubtasks();
+        taskManager.clearTask();
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+
+        FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
+
+        fBTManagerAfterLoad = fBTManagerAfterLoad.loadFromFile(fBTMFromTaskManager.getPath());
+
+        assertEquals(fBTMFromTaskManager, fBTManagerAfterLoad, "Не совпадают");
+    }
+
+    @Test
+    void testSaveAndLoadClearSubTasks(){
+        addTasksEpicsSubtasks();
+        taskManager.clearSubtask();
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+
+        FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
+
+        fBTManagerAfterLoad = fBTManagerAfterLoad.loadFromFile(fBTMFromTaskManager.getPath());
+
+        assertEquals(fBTMFromTaskManager, fBTManagerAfterLoad, "Не совпадают");
+    }
+
+    @Test
+    void testSaveAndLoadClearHistory(){
+        addTasksEpicsSubtasks();
+
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+
+        fBTMFromTaskManager.clearHistory();
+
+        FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
+
+        fBTManagerAfterLoad = fBTManagerAfterLoad.loadFromFile(fBTMFromTaskManager.getPath());
+
+        assertFalse(fBTManagerAfterLoad.equals(fBTMFromTaskManager), "Cовпадают");
+    }
+
 
     @Test
     @Override
     void testAddNewTask() {
         super.testAddNewTask();
-        FileBackedTasksManager g = ((FileBackedTasksManager) taskManager).loadFromFile(Paths.get("src\\BackUpTasksManager.csv"));
 
     }
 
@@ -25,6 +79,7 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     @Override
     void testAddNewEpic() {
         super.testAddNewEpic();
+        System.out.println("");
     }
 
     @Test

@@ -5,6 +5,7 @@ import Tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Epic> epicHashMap = new HashMap<>();
@@ -22,6 +23,20 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
+    @Override
+    public Map<Integer, Task> getTaskHashMap() {
+        return taskHashMap;
+    }
+
+    @Override
+    public Map<Integer, Subtask> getSubtaskHashMap() {
+        return subtaskHashMap;
+    }
+
+    @Override
+    public Map<Integer, Epic> getEpicHashMap() {
+        return epicHashMap;
+    }
 
     @Override
     public List<Epic> getEpics() {

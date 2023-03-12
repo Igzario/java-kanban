@@ -4,10 +4,8 @@ import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static Tasks.Status.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +19,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     Task savedTaskId5;
     Task savedTaskId6;
 
-    abstract void setTaskManager();
+  abstract void setTaskManager();
+
 
     void testAddNewTask() {
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW);
