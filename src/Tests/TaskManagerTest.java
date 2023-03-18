@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static Tasks.Status.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -25,39 +26,41 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
   abstract void setTaskManager();
 
-@Test
-void test(){
-    LocalDateTime localDateTime1 = LocalDateTime.of(2022, 11, 5, 13,5);
-    Duration duration1 = Duration.ofMinutes(150);
-    LocalDateTime localDateTime2 = LocalDateTime.of(2023, 11, 5, 13,5);
-    Duration duration2 = Duration.ofMinutes(300);
-    LocalDateTime localDateTime3 = LocalDateTime.of(2020, 11, 5, 13,5);
-    Duration duration3 = Duration.ofMinutes(500);
+    @Test
+    void testLocalDateTimeForEpic(){
+        LocalDateTime localDateTime1 = LocalDateTime.of(2022, 11, 5, 13,5);
+        Duration duration1 = Duration.ofMinutes(150);
+        LocalDateTime localDateTime2 = LocalDateTime.of(2023, 11, 5, 13,5);
+        Duration duration2 = Duration.ofMinutes(300);
+        LocalDateTime localDateTime3 = LocalDateTime.of(2020, 11, 5, 13,5);
+        Duration duration3 = Duration.ofMinutes(500);
 
-    Epic epic = new Epic(1, "Test addNewEpic", "Epic addNewTask description", NEW);
-    final int epicId = taskManager.newEpic(epic);
+        Epic epic = new Epic(1, "Test addNewEpic", "Epic addNewTask description", NEW);
+        final int epicId = taskManager.newEpic(epic);
 
-    Subtask subTask = new Subtask(5, "Test addNewSubTask", "Test addNewSubTask description", NEW
-            ,localDateTime1,duration1, epicId);
-    epic.getEpicSubTasksList().add(subTask);
+        Subtask subTask = new Subtask(5, "Test addNewSubTask", "Test addNewSubTask description", NEW
+                ,localDateTime1,duration1, epicId);
+        epic.getEpicSubTasksList().add(subTask);
 
+        Subtask subTask2 = new Subtask(6, "Test addNewSubTask2", "Test addNewSubTask description2", NEW
+                ,localDateTime2,duration2, epicId);
+        epic.getEpicSubTasksList().add(subTask2);
 
-    Subtask subTask2 = new Subtask(6, "Test addNewSubTask2", "Test addNewSubTask description2", NEW
-            ,localDateTime2,duration2, epicId);
-    epic.getEpicSubTasksList().add(subTask2);
+        Subtask subTask3 = new Subtask(8, "Test addNewSubTask2", "Test addNewSubTask description2", NEW,
+                localDateTime3,duration3,epicId);
+        epic.getEpicSubTasksList().add(subTask3);
 
+        Duration checkDuration = duration1.plus(duration2).plus(duration3);
+        epic.refreshTime();
 
-    Subtask subTask3 = new Subtask(8, "Test addNewSubTask2", "Test addNewSubTask description2", NEW,
-            localDateTime3,duration3,epicId);
-    epic.getEpicSubTasksList().add(subTask3);
+        List<Subtask> subTasksToCheck = List.of(subTask3, subTask,subTask2);
+        ArrayList<Subtask> subTasks = epic.getEpicSubTasksList();
 
-    Duration test = duration1.plus(duration2).plus(duration3);
-    epic.refreshTime();
-
-    System.out.println("");
-
-}
-
+        for (int i = 0; i<subTasks.size(); i++){
+            assertEquals(subTasks.get(i), subTasksToCheck.get(i));
+        }
+        assertEquals(checkDuration, epic.getDuration(), "Duration не совпадают.");
+    }
 
     void testAddNewTask() {
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW);

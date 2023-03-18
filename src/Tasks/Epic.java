@@ -3,11 +3,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.stream.Stream;
 
 public class Epic extends Task {
     private ArrayList<Subtask> epicSubTasksList;
     private LocalDateTime endTime;
+    private Duration duration;
 
     public Epic(int id, String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
         super(id, name, discription, status, startTime, duration);
@@ -42,12 +42,17 @@ public class Epic extends Task {
     }
 
     public void refreshTime(){
-        epicSubTasksList.sort((Comparator<Task>) (o1, o2) -> o1.getStartTime().compareTo(o2.getStartTime()));
+        epicSubTasksList.sort(Comparator.comparing(Task::getStartTime));
         if (!epicSubTasksList.isEmpty()) {
             setStartTime(epicSubTasksList.get(0).getStartTime());
             endTime = epicSubTasksList.get(epicSubTasksList.size() - 1).getEndTime();
+            epicSubTasksList.forEach(subtask -> refreshDuration(subtask.getDuration()));
         }
-        epicSubTasksList.forEach(subtask -> refreshDuration(subtask.getDuration()));
+        else {
+            this.endTime = LocalDateTime.MAX;
+            this.duration = Duration.between(LocalDateTime.now(), endTime);
+        }
+
     }
     public ArrayList<Subtask> getEpicSubTasksList() {
         return epicSubTasksList;
