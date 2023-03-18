@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +80,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public void save() {
         try {
             Writer fileWriter = new FileWriter(path.toString());
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description, startTime, duration, epic\n");
             for (Task task : taskHashMap.values()) {
                 fileWriter.write(toStringChange(task));
             }
@@ -107,7 +109,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         fileBackedTasksManagerFromFile.setPath(file);
         try {
             String str = Files.readString(file);
-            str = str.replace("id,type,name,status,description,epic\n", "");
+            str = str.replace("id,type,name,status,description, startTime, duration, epic\n", "");
             String[] strMassiv = str.split("\n");
             for (int i = 0; i < strMassiv.length; i++) {
                 if (!strMassiv[i].equals("")) {
@@ -123,6 +125,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         Subtask subtask = (Subtask) task;
                         fileBackedTasksManagerFromFile.subtaskHashMap.put(subtask.getId(), subtask);
                         fileBackedTasksManagerFromFile.epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+                        fileBackedTasksManagerFromFile.epicHashMap.get(subtask.getIdEpic()).refreshTime();
                         idTasks++;
                     }
                 } else {
@@ -154,38 +157,47 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             case "subtask":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.NEW, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.NEW,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
                         break;
                     case "IN_PROGRESS":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
                         break;
                     case "DONE":
-                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.DONE, Integer.parseInt(split[5]));
+                        task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.DONE,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
                 }
                 break;
             case "task":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.NEW
+                                , LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                     case "IN_PROGRESS":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                     case "DONE":
-                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
+                        task = new Task(Integer.parseInt(split[0]), split[2], split[4], Status.DONE,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                 }
                 break;
             case "epic":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                     case "IN_PROGRESS":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                     case "DONE":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE,
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
                         break;
                 }
                 break;
@@ -210,7 +222,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 .append(task.getStatus())
                 .append(",")
                 .append(task.getDescription())
-                .append(",");
+                .append(",")
+                .append(task.getStartTime())
+                .append(",")
+                .append(task.getDuration())
+                .append(",")
+        ;
         if (task.getClass() == Subtask.class) {
             stringBuilder.append(((Subtask) task).getIdEpic())
                     .append("\n");
@@ -253,6 +270,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         subtask.setId(id);
         subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
         save();
         return id;
     }

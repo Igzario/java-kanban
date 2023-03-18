@@ -78,6 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setId(id);
         subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
         return id;
     }
 

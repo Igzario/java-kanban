@@ -79,7 +79,6 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     @Override
     void testAddNewEpic() {
         super.testAddNewEpic();
-        System.out.println("");
     }
 
     @Test
