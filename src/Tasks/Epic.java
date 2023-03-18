@@ -1,4 +1,5 @@
 package Tasks;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,27 +8,39 @@ import java.util.Comparator;
 public class Epic extends Task {
     private ArrayList<Subtask> epicSubTasksList;
     private LocalDateTime endTime;
-    private Duration duration;
 
-    public Epic(int id, String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
-        super(id, name, discription, status, startTime, duration);
-        this.epicSubTasksList = new ArrayList<>();
-    }
-
-    public Epic(String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
-        super(name, discription, status, startTime, duration);
-        this.epicSubTasksList = new ArrayList<>();
-    }
 
     public Epic(int id, String name, String discription, Status status) {
-        super(id, name, discription, status);
+        this.setId(id);
+        this.setName(name);
+        this.setDescription(discription);
+        this.setStatus(status);
         this.epicSubTasksList = new ArrayList<>();
+        this.setStartTime(LocalDateTime.MIN);
+        this.endTime = LocalDateTime.MAX;
+        this.setDuration(Duration.ZERO);
     }
 
     public Epic(String name, String discription, Status status) {
-        super(name, discription, status);
+        this.setName(name);
+        this.setDescription(discription);
+        this.setStatus(status);
         this.epicSubTasksList = new ArrayList<>();
+        this.setStartTime(LocalDateTime.MIN);
+        this.endTime = LocalDateTime.MAX;
+        this.setDuration(Duration.ZERO);
     }
+
+
+//    public Epic(int id, String name, String discription, Status status) {
+//        super(id, name, discription, status);
+//        this.epicSubTasksList = new ArrayList<>();
+//    }
+//
+//    public Epic(String name, String discription, Status status) {
+//        super(name, discription, status);
+//        this.epicSubTasksList = new ArrayList<>();
+//    }
 
     @Override
     public LocalDateTime getEndTime() {
@@ -35,25 +48,23 @@ public class Epic extends Task {
     }
 
     private void refreshDuration(Duration duration) {
-        if (this.getDuration()==null)
+        if (this.getDuration() == Duration.ZERO) {
             this.setDuration(duration);
-        else
-            setDuration(this.getDuration().plus(duration));
+        } else {
+            this.setDuration(getDuration().plus(duration));
+        }
     }
 
-    public void refreshTime(){
+    public void refreshTime() {
         epicSubTasksList.sort(Comparator.comparing(Task::getStartTime));
         if (!epicSubTasksList.isEmpty()) {
             setStartTime(epicSubTasksList.get(0).getStartTime());
             endTime = epicSubTasksList.get(epicSubTasksList.size() - 1).getEndTime();
+            this.setDuration(Duration.ZERO);
             epicSubTasksList.forEach(subtask -> refreshDuration(subtask.getDuration()));
         }
-        else {
-            this.endTime = LocalDateTime.MAX;
-            this.duration = Duration.between(LocalDateTime.now(), endTime);
-        }
-
     }
+
     public ArrayList<Subtask> getEpicSubTasksList() {
         return epicSubTasksList;
     }

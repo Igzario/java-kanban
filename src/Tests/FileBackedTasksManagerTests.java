@@ -64,7 +64,7 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
 
         fBTManagerAfterLoad = fBTManagerAfterLoad.loadFromFile(fBTMFromTaskManager.getPath());
 
-        assertFalse(fBTManagerAfterLoad.equals(fBTMFromTaskManager), "Cовпадают");
+        assertNotEquals(fBTManagerAfterLoad, fBTMFromTaskManager, "Cовпадают");
     }
 
 

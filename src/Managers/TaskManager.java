@@ -3,9 +3,7 @@ import Tasks.Epic;
 import Tasks.Subtask;
 import Tasks.Task;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface TaskManager {
 
@@ -55,6 +53,7 @@ public interface TaskManager {
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
 
+    Set<Task> getPrioritizedTasks();
 
-
+    void checkTaskTime(Task task);
 }

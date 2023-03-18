@@ -188,16 +188,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             case "epic":
                 switch (split[3]) {
                     case "NEW":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.NEW);
+                        task.setDuration(Duration.parse(split[6]));
+                        task.setStartTime(LocalDateTime.parse(split[5]));
                         break;
                     case "IN_PROGRESS":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS);
+                        task.setDuration(Duration.parse(split[6]));
+                        task.setStartTime(LocalDateTime.parse(split[5]));
                         break;
                     case "DONE":
-                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]));
+                        task = new Epic(Integer.parseInt(split[0]), split[2], split[4], Status.DONE);
+                        task.setDuration(Duration.parse(split[6]));
+                        task.setStartTime(LocalDateTime.parse(split[5]));
                         break;
                 }
                 break;
@@ -249,6 +252,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         idTasks++;
         task.setId(id);
         taskHashMap.put(id, task);
+        sortedTasksAndSubtasksForStartTime.add(task);
         save();
         return id;
     }
@@ -271,6 +275,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
         epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
+        sortedTasksAndSubtasksForStartTime.add(subtask);
         save();
         return id;
     }
@@ -384,7 +389,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
             }
             for (Task task : this.getHistory()) {
-                List<Task> testArray = test.getHistory();
                 Task testTask = test.getHistory().get(task.getId()-1);
                 if (testTask == null) {
                     return false;

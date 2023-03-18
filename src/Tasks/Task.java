@@ -1,5 +1,4 @@
 package Tasks;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -11,6 +10,10 @@ public class Task {
     private Status status;
     private LocalDateTime startTime;
     private Duration duration;
+
+
+    public Task() {
+    }
 
     public Task(int id, String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
@@ -29,18 +32,19 @@ public class Task {
         this.duration = duration;
     }
 
-    public Task(int id, String name, String discription, Status status) {
-        this.id = id;
-        this.name = name;
-        this.description = discription;
-        this.status = status;
-
-    }
-    public Task( String name, String discription, Status status) {
-        this.name = name;
-        this.description = discription;
-        this.status = status;
-    }
+//
+//    public Task(int id, String name, String discription, Status status) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = discription;
+//        this.status = status;
+//
+//    }
+//    public Task( String name, String discription, Status status) {
+//        this.name = name;
+//        this.description = discription;
+//        this.status = status;
+//    }
 
     public LocalDateTime getEndTime(){
         return startTime.plus(duration);
@@ -88,7 +92,11 @@ public class Task {
                 .append(", Описание  - ")
                 .append(description)
                 .append(", Статус - ")
-                .append(status);
+                .append(status)
+                .append(", Дата старта - ")
+                .append(startTime)
+                .append(", Продолжительность выполнения - ")
+                .append(duration);
         return result.toString();
     }
 
@@ -107,7 +115,4 @@ public class Task {
     public void setDuration(Duration duration) {
         this.duration = duration;
     }
-
-
-
 }
