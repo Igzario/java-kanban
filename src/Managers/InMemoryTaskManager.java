@@ -18,7 +18,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     Set<Task> sortedTasksAndSubtasksForStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
-
     @Override
     public Map<Integer, Task> getTaskHashMap() {
         return taskHashMap;

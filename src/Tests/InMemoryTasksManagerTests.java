@@ -4,7 +4,6 @@ import Tasks.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 public class InMemoryTasksManagerTests extends TaskManagerTest {
 
     @BeforeEach

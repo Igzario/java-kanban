@@ -1,8 +1,10 @@
 package Tests;
+
 import Managers.Managers;
 import Managers.FileBackedTasksManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTasksManagerTests extends TaskManagerTest {
@@ -15,9 +17,9 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoad(){
+    void testSaveAndLoad() {
         addTasksEpicsSubtasks();
-        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager) taskManager;
 
         FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
 
@@ -27,10 +29,10 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoadClearTasks(){
+    void testSaveAndLoadClearTasks() {
         addTasksEpicsSubtasks();
         taskManager.clearTask();
-        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager) taskManager;
 
         FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
 
@@ -40,10 +42,10 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoadClearSubTasks(){
+    void testSaveAndLoadClearSubTasks() {
         addTasksEpicsSubtasks();
         taskManager.clearSubtask();
-        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager) taskManager;
 
         FileBackedTasksManager fBTManagerAfterLoad = new FileBackedTasksManager(fBTMFromTaskManager.getPath());
 
@@ -53,10 +55,10 @@ public class FileBackedTasksManagerTests extends TaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoadClearHistory(){
+    void testSaveAndLoadClearHistory() {
         addTasksEpicsSubtasks();
 
-        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager)taskManager;
+        FileBackedTasksManager fBTMFromTaskManager = (FileBackedTasksManager) taskManager;
 
         fBTMFromTaskManager.clearHistory();
 

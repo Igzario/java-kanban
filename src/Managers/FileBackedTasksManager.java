@@ -1,12 +1,9 @@
 package Managers;
-
 import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
 import Tasks.Task;
-
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -14,8 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
 
@@ -31,50 +26,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public void setPath(Path path) {
         this.path = path;
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        FileBackedTasksManager manager = Managers.getDefault();
-
-//        manager.newTask(new Task( "Задача1", "Очень важная задача1", Status.NEW));
-//        manager.newTask(new Task( "Задача1", "Очень важная задача2", Status.NEW));
-//        manager.newTask(new Task( "Задача3", "Очень важная задача3", Status.NEW));
-//
-//        manager.newEpic(new Epic( "Эпик4", "Очень важный эпик4", Status.NEW));
-//        manager.newEpic(new Epic( "Эпик5", "Очень важный эпик5", Status.NEW));
-//        manager.newEpic(new Epic( "Эпик6", "Очень важный эпик6", Status.NEW));
-//
-//        manager.newSubTask(new Subtask( "Подзадача7", "Очень важная подзадача7", Status.NEW, 4));
-//        manager.newSubTask(new Subtask( "Подзадача8", "Очень важная подзадача8", Status.NEW, 4));
-//        manager.newSubTask(new Subtask( "Подзадача9", "Очень важная подзадача9", Status.NEW, 5));
-//        manager.newSubTask(new Subtask( "Подзадача8", "Очень важная подзадача8", Status.NEW, 5));
-//        manager.newSubTask(new Subtask( "Подзадача11", "Очень важная подзадача11", Status.NEW, 6));
-//
-//        manager.searchTaskForId(2);
-//        manager.searchTaskForId(3);
-//        manager.searchTaskForId(1);
-//        manager.searchSubtaskForId(9);
-//        manager.searchSubtaskForId(11);
-//        manager.searchEpicForId(5);
-//        manager.searchEpicForId(4);
-//        manager.searchSubtaskForId(7);
-//        manager.searchSubtaskForId(8);
-//        manager.searchEpicForId(6);
-//        manager.searchSubtaskForId(10);
-
-        manager = manager.loadFromFile(manager.getPath());
-
-        String str = Files.readString(manager.getPath());
-        String[] strMassiv = str.split("\n");
-        System.out.println("\nДанные из бэкапа:");
-        for (String s : strMassiv) {
-            System.out.println(s);
-        }
-        System.out.println("\nДанные из менеджера:");
-        System.out.println(manager);
-        System.out.println("\nИстория запросов:");
-        System.out.println(manager.getHistory());
     }
 
     public void save() {
@@ -245,9 +196,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-
     @Override
     public int newTask(Task task) {
+        checkTaskTime(task);
         int id = idTasks;
         idTasks++;
         task.setId(id);
@@ -269,6 +220,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     @Override
     public int newSubTask(Subtask subtask) {
+        checkTaskTime(subtask);
         int id = idTasks;
         idTasks++;
         subtask.setId(id);
@@ -388,8 +340,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     return false;
                 }
             }
+            int i = 0;
             for (Task task : this.getHistory()) {
-                Task testTask = test.getHistory().get(task.getId()-1);
+                Task testTask = test.getHistory().get(i);
                 if (testTask == null) {
                     return false;
                 }
@@ -399,6 +352,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 if (!isOk) {
                     return false;
                 }
+                i++;
             }
         }
         return isOk;
