@@ -147,7 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
             deleteSubTaskForId(newSubtask.getId());
             epicHashMap.get(newSubtask.getIdEpic()).getEpicSubTasksList().add(newSubtask);
             subtaskHashMap.put(newSubtask.getId(), newSubtask);
-            epicHashMap.get(newSubtask.getIdEpic()).refreshStatus();
+            epicHashMap.get(newSubtask.getIdEpic()).refreshStatusAndTime();
         }
     }
 
@@ -157,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
             newEpic.setEpicSubTasksList(epicHashMap.get(newEpic.getId()).getEpicSubTasksList());
             deleteEpicForId(newEpic.getId());
             epicHashMap.put(newEpic.getId(), newEpic);
-            newEpic.refreshStatus();
+            newEpic.refreshStatusAndTime();
         }
     }
 
@@ -177,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Нет подзадачи с таким ID");
         } else {
             epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(idDelete));
-            epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).refreshStatus();
+            epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).refreshStatusAndTime();
             subtaskHashMap.remove(idDelete);
             historyManager.remove(idDelete);
         }

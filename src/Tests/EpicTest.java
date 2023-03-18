@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static Tasks.Status.NEW;
 
@@ -29,14 +28,14 @@ public class EpicTest {
         list.add(subtask2);
         list.add(subtask3);
         epic.setEpicSubTasksList(list);
-        epic.refreshStatus();
+        epic.refreshStatusAndTime();
     }
 
     @Test
     public void testEpic() {
         list.clear();
         epic.setEpicSubTasksList(list);
-        epic.refreshStatus();
+        epic.refreshStatusAndTime();
 
     }
 

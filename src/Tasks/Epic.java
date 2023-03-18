@@ -1,19 +1,54 @@
 package Tasks;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class Epic extends Task {
     private ArrayList<Subtask> epicSubTasksList;
+    private LocalDateTime endTime;
 
-    public Epic(int id, String name, String opisanie, Status status) {
-        super(id, name, opisanie, status);
-        epicSubTasksList = new ArrayList<>();
+    public Epic(int id, String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
+        super(id, name, discription, status, startTime, duration);
+        this.epicSubTasksList = new ArrayList<>();
+    }
+
+    public Epic(String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
+        super(name, discription, status, startTime, duration);
+        this.epicSubTasksList = new ArrayList<>();
+    }
+
+    public Epic(int id, String name, String discription, Status status) {
+        super(id, name, discription, status);
+        this.epicSubTasksList = new ArrayList<>();
     }
 
     public Epic(String name, String discription, Status status) {
         super(name, discription, status);
-        epicSubTasksList = new ArrayList<>();
+        this.epicSubTasksList = new ArrayList<>();
     }
 
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    private void refreshDuration(Duration duration) {
+        if (this.getDuration()==null)
+            this.setDuration(duration);
+        else
+            setDuration(this.getDuration().plus(duration));
+    }
+
+    public void refreshTime(){
+        epicSubTasksList.sort((Comparator<Task>) (o1, o2) -> o1.getStartTime().compareTo(o2.getStartTime()));
+        if (!epicSubTasksList.isEmpty()) {
+            setStartTime(epicSubTasksList.get(0).getStartTime());
+            endTime = epicSubTasksList.get(epicSubTasksList.size() - 1).getEndTime();
+        }
+        epicSubTasksList.forEach(subtask -> refreshDuration(subtask.getDuration()));
+    }
     public ArrayList<Subtask> getEpicSubTasksList() {
         return epicSubTasksList;
     }
@@ -22,19 +57,19 @@ public class Epic extends Task {
         this.epicSubTasksList = epicSubTasksList;
     }
 
-    public void refreshStatus() {
+    public void refreshStatusAndTime() {
+        refreshTime();
         int countNew = 0;
         int countDone = 0;
         int countProgress = 0;
-
         for (Subtask o : this.epicSubTasksList) {
-            if (o.getStatus()== Status.NEW) {
+            if (o.getStatus() == Status.NEW) {
                 countNew++;
             }
-            if (o.getStatus()==Status.DONE) {
+            if (o.getStatus() == Status.DONE) {
                 countDone++;
             }
-            if (o.getStatus()==Status.IN_PROGRESS) {
+            if (o.getStatus() == Status.IN_PROGRESS) {
                 countProgress++;
             }
         }
