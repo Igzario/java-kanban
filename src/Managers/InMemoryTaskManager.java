@@ -1,7 +1,6 @@
 package Managers;
 
 import Exeptions.CheckTaskTimeException;
-import Exeptions.ManagerSaveException;
 import Tasks.Epic;
 import Tasks.Status;
 import Tasks.Subtask;
@@ -16,7 +15,9 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected int idTasks = 1;
 
-    Set<Task> sortedTasksAndSubtasksForStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    TreeSet<Task> sortedTasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+    LinkedList<Task> sortedTasksList = new LinkedList<>();
+
 
     @Override
     public Map<Integer, Task> getTaskHashMap() {
@@ -55,7 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
         idTasks++;
         task.setId(id);
         taskHashMap.put(id, task);
-        sortedTasksAndSubtasksForStartTime.add(task);
+        prioritizedTasks(task);
         return id;
     }
 
@@ -77,7 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
         epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
-        sortedTasksAndSubtasksForStartTime.add(subtask);
+        prioritizedTasks(subtask);
         return id;
     }
 
@@ -138,9 +139,9 @@ public class InMemoryTaskManager implements TaskManager {
             deleteTaskForId(newTask.getId());
             taskHashMap.put(newTask.getId(), newTask);
             if (newTask.getStatus() == Status.DONE) {
-                sortedTasksAndSubtasksForStartTime.remove(newTask);
+                sortedTasksTreeSet.remove(newTask);
             } else {
-                sortedTasksAndSubtasksForStartTime.add(newTask);
+                sortedTasksTreeSet.add(newTask);
             }
         }
     }
@@ -154,9 +155,9 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskHashMap.put(newSubtask.getId(), newSubtask);
             epicHashMap.get(newSubtask.getIdEpic()).refreshStatusAndTime();
             if (newSubtask.getStatus() == Status.DONE) {
-                sortedTasksAndSubtasksForStartTime.remove(newSubtask);
+                sortedTasksTreeSet.remove(newSubtask);
             } else {
-                sortedTasksAndSubtasksForStartTime.add(newSubtask);
+                sortedTasksTreeSet.add(newSubtask);
             }
         }
     }
@@ -176,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!taskHashMap.containsKey(idDelete)) {
             System.out.println("Нет задачи с таким ID");
         } else {
-            sortedTasksAndSubtasksForStartTime.remove(taskHashMap.get(idDelete));
+            sortedTasksTreeSet.remove(taskHashMap.get(idDelete));
             taskHashMap.remove(idDelete);
             historyManager.remove(idDelete);
         }
@@ -187,7 +188,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtaskHashMap.containsKey(idDelete)) {
             System.out.println("Нет подзадачи с таким ID");
         } else {
-            sortedTasksAndSubtasksForStartTime.remove(subtaskHashMap.get(idDelete));
+            sortedTasksTreeSet.remove(subtaskHashMap.get(idDelete));
             epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).getEpicSubTasksList().remove(subtaskHashMap.get(idDelete));
             epicHashMap.get(subtaskHashMap.get(idDelete).getIdEpic()).refreshStatusAndTime();
             subtaskHashMap.remove(idDelete);
@@ -256,23 +257,30 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        return sortedTasksAndSubtasksForStartTime;
+    public LinkedList<Task> getPrioritizedTasks() {
+        return sortedTasksList;
+    }
+
+    public void prioritizedTasks(Task task){
+        if (task != null)
+        {
+            sortedTasksTreeSet.add(task);
+            sortedTasksList.addAll(sortedTasksTreeSet);
+        }
+        else
+        {
+            sortedTasksList.addAll(sortedTasksTreeSet);
+            sortedTasksList.addLast(task);
+        }
     }
 
     @Override
     public void checkTaskTime(Task task) {
-//        try {
-        for (Task task1 : sortedTasksAndSubtasksForStartTime) {
+        for (Task task1 : sortedTasksTreeSet) {
             if (task.getStartTime().isAfter(task1.getStartTime()) && task.getStartTime().isBefore(task1.getEndTime()))
                 throw new CheckTaskTimeException();
             else if (task.getEndTime().isAfter(task1.getStartTime()) && task.getEndTime().isBefore(task1.getEndTime()))
                 throw new CheckTaskTimeException();
         }
     }
-//       catch (Exception e)
-//       {
-//           System.out.println(e.getMessage());
-//       }
-//    }
 }

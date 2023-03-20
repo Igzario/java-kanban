@@ -203,7 +203,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         idTasks++;
         task.setId(id);
         taskHashMap.put(id, task);
-        sortedTasksAndSubtasksForStartTime.add(task);
+        sortedTasksTreeSet.add(task);
         save();
         return id;
     }
@@ -227,7 +227,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         subtaskHashMap.put(id, subtask);
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
         epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
-        sortedTasksAndSubtasksForStartTime.add(subtask);
+        sortedTasksTreeSet.add(subtask);
         save();
         return id;
     }

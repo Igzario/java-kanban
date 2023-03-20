@@ -53,7 +53,7 @@ public interface TaskManager {
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
 
-    Set<Task> getPrioritizedTasks();
+    LinkedList<Task>  getPrioritizedTasks();
 
     void checkTaskTime(Task task);
 }
