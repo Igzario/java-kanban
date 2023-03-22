@@ -1,6 +1,5 @@
-package Tests;
-import Managers.InMemoryTaskManager;
-import Tasks.Status;
+import managers.InMemoryTaskManager;
+import tasks.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

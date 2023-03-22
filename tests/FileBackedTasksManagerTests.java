@@ -1,7 +1,5 @@
-package Tests;
-
-import Managers.Managers;
-import Managers.FileBackedTasksManager;
+import managers.Managers;
+import managers.FileBackedTasksManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

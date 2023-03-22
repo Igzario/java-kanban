@@ -1,9 +1,11 @@
-package Managers;
-import Exeptions.ManagerSaveException;
-import Tasks.Epic;
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
+package managers;
+import exeptions.ManagerSaveException;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
+import lombok.Getter;
+import lombok.Setter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -13,25 +15,17 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
-
+    @Getter    @Setter
     private Path path;
 
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
 
-    public Path getPath() {
-        return path;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
-    }
-
     public void save() {
         try {
             Writer fileWriter = new FileWriter(path.toString());
-            fileWriter.write("id,type,name,status,description, startTime, duration, epic\n");
+            fileWriter.write("id,type,name,status,description,startTime,duration,epic\n");
             for (Task task : taskHashMap.values()) {
                 fileWriter.write(toStringChange(task));
             }
@@ -60,7 +54,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         fileBackedTasksManagerFromFile.setPath(file);
         try {
             String str = Files.readString(file);
-            str = str.replace("id,type,name,status,description, startTime, duration, epic\n", "");
+            str = str.replace("id,type,name,status,description,startTime,duration,epic\n", "");
             String[] strMassiv = str.split("\n");
             for (int i = 0; i < strMassiv.length; i++) {
                 if (!strMassiv[i].equals("")) {
@@ -204,6 +198,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         task.setId(id);
         taskHashMap.put(id, task);
         sortedTasksTreeSet.add(task);
+        prioritizedTasks(task);
         save();
         return id;
     }
@@ -228,6 +223,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
         epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
         sortedTasksTreeSet.add(subtask);
+        prioritizedTasks(subtask);
         save();
         return id;
     }
@@ -357,4 +353,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
         return isOk;
     }
+
+
 }

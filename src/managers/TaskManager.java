@@ -1,17 +1,11 @@
-package Managers;
-import Tasks.Epic;
-import Tasks.Subtask;
-import Tasks.Task;
+package managers;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 
 import java.util.*;
 
 public interface TaskManager {
-
-    Map<Integer, Task> getTaskHashMap();
-
-    Map<Integer, Subtask> getSubtaskHashMap();
-
-    Map<Integer, Epic> getEpicHashMap();
 
     List<Epic> getEpics();
 

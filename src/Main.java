@@ -1,322 +1,232 @@
-import Managers.Managers;
-import Managers.FileBackedTasksManager;
-import Tasks.Epic;
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
-
+import exeptions.CheckTaskTimeException;
+import managers.Managers;
+import managers.FileBackedTasksManager;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Scanner;
+import java.util.LinkedList;
+import static tasks.Status.DONE;
+import static tasks.Status.NEW;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+//Переменная будет меняться? - да, в методе загрузки указывается
+
+
+//И нет времени окончания, добавь его. - зачем? это же файл бэкапа, время окончания это рассчетное поле, соответственно
+// и заполнится само...
+
+// Для ссылочных  переменных следует прописывать final.  - head не может быть final
 public class Main {
+    static FileBackedTasksManager taskManager = Managers.getDefault();
 
-    public static void main(String[] args) throws IOException {
-        FileBackedTasksManager manager = Managers.getDefault();
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            int userInput = printMenuAndRead(scanner);
-            Scanner scanner1 = new Scanner(System.in);
-            Scanner scanner2 = new Scanner(System.in);
-            Scanner scanner3 = new Scanner(System.in);
-            Scanner scanner4 = new Scanner(System.in);
-            Scanner scanner5 = new Scanner(System.in);
-            Scanner scanner6 = new Scanner(System.in);
-            Scanner scanner7 = new Scanner(System.in);
+    public void main(String[] args) throws IOException {
 
-            int year;
-            int month;
-            int day;
-            int hour;
-            int minutes;
-            int duration;
-            if (userInput == 0) {
-                break;
-            }
-            switch (userInput) {
-                case 1:
-                    System.out.println("Введите название задачи:");
-                    String nameTask = scanner1.nextLine();
-                    System.out.println("Введите описание задачи");
-                    String opisanieTask = scanner2.nextLine();
-                    System.out.println("Введите дату начала выполнения задачи");
-                    System.out.println("Введите год");
-                    year = scanner3.nextInt();
-                    System.out.println("Введите месяц");
-                    month = scanner4.nextInt();
-                    System.out.println("Введите день");
-                    day = scanner5.nextInt();
-                    System.out.println("Введите час");
-                    hour = scanner6.nextInt();
-                    System.out.println("Введите минуты");
-                    minutes = scanner7.nextInt();
-                    System.out.println("Введите продолжительность выполнения задачи в минутах");
-                    duration = scanner.nextInt();
-                    Task newTask = new Task(nameTask, opisanieTask, Status.NEW, LocalDateTime.of(year, month, day, hour, minutes), Duration.ofMinutes(duration));
-                    manager.newTask(newTask);
-                    System.out.println("Готово");
-                    continue;
-                case 2:
-                    System.out.println("Введите название Эпика:");
-                    String nameEpic = scanner1.nextLine();
-                    System.out.println("Введите описание Эпика");
-                    String opisanieEpic = scanner2.nextLine();
-                    Epic newEpic = new Epic(nameEpic, opisanieEpic, Status.NEW);
-                    manager.newEpic(newEpic);
-                    System.out.println("Готово");
-                    continue;
-                case 3:
-                    System.out.println("Введите название подзадачи:");
-                    String nameSubTask = scanner1.nextLine();
-                    System.out.println("Введите описание подзадачи");
-                    String opisanieSubTask = scanner2.nextLine();
-                    System.out.println(manager.getEpics());
-                    System.out.println("Введите ID Эпика");
-                    int idEpic = scanner3.nextInt();
-                    System.out.println("Введите дату начала выполнения задачи");
-                    System.out.println("Введите год");
-                    year = scanner3.nextInt();
-                    System.out.println("Введите месяц");
-                    month = scanner4.nextInt();
-                    System.out.println("Введите день");
-                    day = scanner5.nextInt();
-                    System.out.println("Введите час");
-                    hour = scanner6.nextInt();
-                    System.out.println("Введите минуты");
-                    minutes = scanner7.nextInt();
-                    System.out.println("Введите продолжительность выполнения задачи в минутах");
-                    duration = scanner.nextInt();
+        testPeresechenieTime();
+        testEpicTime();
+        tesPprintPrioritizedTasks();
 
-
-                    Subtask newSubtask = new Subtask(nameSubTask, opisanieSubTask, Status.NEW, LocalDateTime.of(year, month, day, hour, minutes), Duration.ofMinutes(duration), idEpic);
-
-                    manager.newSubTask(newSubtask);
-                    System.out.println("Готово");
-                    continue;
-                case 4:
-                    System.out.println("Введите ID целевой задачи");
-                    int idTask = scanner1.nextInt();
-                    if (manager.getTaskHashMap().containsKey(idTask)) {
-                        System.out.println("Введите новое название задачи:");
-                        String newNameTask = scanner2.nextLine();
-                        System.out.println("Введите новое описание задачи");
-                        String newOpisanieTask = scanner3.nextLine();
-                        System.out.println("Выберите новый статус задачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int status = scanner4.nextInt();
-
-                        System.out.println("Введите дату начала выполнения задачи");
-                        System.out.println("Введите год");
-                        year = scanner3.nextInt();
-                        System.out.println("Введите месяц");
-                        month = scanner4.nextInt();
-                        System.out.println("Введите день");
-                        day = scanner5.nextInt();
-                        System.out.println("Введите час");
-                        hour = scanner6.nextInt();
-                        System.out.println("Введите минуты");
-                        minutes = scanner7.nextInt();
-                        System.out.println("Введите продолжительность выполнения задачи в минутах");
-                        duration = scanner.nextInt();
-
-                        Task task = new Task(idTask, newNameTask, newOpisanieTask, Status.NEW, LocalDateTime.of(year, month, day, hour, minutes), Duration.ofMinutes(duration));
-                        if (status == 2) {
-                            task.setStatus(Status.IN_PROGRESS);
-                            System.out.println("Готово");
-                        }
-                        if (status == 3) {
-                            task.setStatus(Status.DONE);
-                            System.out.println("Готово");
-                        }
-                        manager.refreshTask(task);
-                        continue;
-                    } else {
-                        System.out.println("Такой задачи нет");
-                        continue;
-                    }
-                case 5:
-                    System.out.println("Введите ID целевого Эпика");
-                    int idNewEpic = scanner1.nextInt();
-                    if (manager.getEpicHashMap().containsKey(idNewEpic)) {
-                        System.out.println("Введите новое название Эпика");
-                        String newNameEpic = scanner2.nextLine();
-                        System.out.println("Введите новое описание Эпика");
-                        String newOpisanieEpic = scanner3.nextLine();
-                        System.out.println("Выберите новый статус Эпика: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int statusNew = scanner4.nextInt();
-                        Epic epic = new Epic(idNewEpic, newNameEpic, newOpisanieEpic, Status.NEW);
-                        if (statusNew == 2) {
-                            epic.setStatus(Status.IN_PROGRESS);
-                            System.out.println("Готово");
-                        }
-                        if (statusNew == 3) {
-                            epic.setStatus(Status.DONE);
-                            System.out.println("Готово");
-                        }
-                        manager.refreshEpic(epic);
-                        continue;
-                    } else {
-                        System.out.println("Такой задачи нет");
-                    }
-                case 6:
-                    System.out.println("Введите ID целевой подзадачи`");
-                    int idNewSubTask = scanner1.nextInt();
-                    if (manager.getSubtaskHashMap().containsKey(idNewSubTask)) {
-                        System.out.println("Введите новое название подзадачи");
-                        String newNameSubTask = scanner2.nextLine();
-                        System.out.println("Введите новое описание подзадачи");
-                        String newOpisanieSubTask = scanner3.nextLine();
-                        System.out.println("Выберите новый статус подзадачи: 1 - Новая задча, 2 - В процессе, 3 - Выполнена");
-                        int statusNewSubTask = scanner4.nextInt();
-
-                        System.out.println("Введите дату начала выполнения задачи");
-                        System.out.println("Введите год");
-                        year = scanner3.nextInt();
-                        System.out.println("Введите месяц");
-                        month = scanner4.nextInt();
-                        System.out.println("Введите день");
-                        day = scanner5.nextInt();
-                        System.out.println("Введите час");
-                        hour = scanner6.nextInt();
-                        System.out.println("Введите минуты");
-                        minutes = scanner7.nextInt();
-                        System.out.println("Введите продолжительность выполнения задачи в минутах");
-                        duration = scanner.nextInt();
-
-                        int idEpicSub = manager.getSubtaskHashMap().get(idNewSubTask).getIdEpic();
-                        Subtask subtaskNew = new Subtask(idNewSubTask, newNameSubTask, newOpisanieSubTask, Status.NEW, LocalDateTime.of(year, month, day, hour, minutes), Duration.ofMinutes(duration), idEpicSub);
-                        if (statusNewSubTask == 2) {
-                            subtaskNew.setStatus(Status.IN_PROGRESS);
-                            System.out.println("Готово");
-                        }
-                        if (statusNewSubTask == 3) {
-                            subtaskNew.setStatus(Status.DONE);
-                            System.out.println("Готово");
-                        }
-                        manager.refreshSubTask(subtaskNew);
-                        continue;
-                    } else {
-                        System.out.println("Такой задачи нет");
-                        continue;
-                    }
-                case 7:
-                    System.out.println("Введите ID задачи");
-                    int idSearchTask = scanner1.nextInt();
-                    if (manager.getTaskHashMap().containsKey(idSearchTask)) {
-                        System.out.println(manager.searchTaskForId(idSearchTask));
-                        System.out.println("Готово");
-                        continue;
-                    } else {
-                        System.out.println("Такой задачи нет");
-                        continue;
-                    }
-                case 8:
-                    System.out.println("Введите ID Эпика");
-                    int idSearchEpic = scanner1.nextInt();
-                    if (manager.getEpicHashMap().containsKey(idSearchEpic)) {
-                        System.out.println(manager.searchEpicForId(idSearchEpic));
-                        System.out.println("Готово");
-                        continue;
-                    } else {
-                        System.out.println("Такого эпика нет");
-                        continue;
-                    }
-                case 9:
-                    System.out.println("Введите ID подзадачи");
-                    int idSearchSubTask = scanner1.nextInt();
-                    if (manager.getSubtaskHashMap().containsKey(idSearchSubTask)) {
-                        System.out.println(manager.searchSubtaskForId(idSearchSubTask));
-                        System.out.println("Готово");
-                        continue;
-                    }
-                case 10:
-                    manager.clearTask();
-                    continue;
-                case 11:
-                    manager.clearEpic();
-                    continue;
-                case 12:
-                    manager.clearSubtask();
-                    continue;
-                case 13:
-                    System.out.println("Введите ID задачи для удаления");
-                    int idDelTask = scanner1.nextInt();
-                    manager.deleteTaskForId(idDelTask);
-                    continue;
-                case 14:
-                    System.out.println("Введите ID Эпика для удаления");
-                    int idDelEpic = scanner1.nextInt();
-                    manager.deleteEpicForId(idDelEpic);
-                    continue;
-                case 15:
-                    System.out.println("Введите ID подзадачи для удаления");
-                    int idDelSubtask = scanner1.nextInt();
-                    manager.deleteSubTaskForId(idDelSubtask);
-                    continue;
-                case 16:
-                    System.out.println(manager);
-                    continue;
-                case 17:
-                    System.out.println(manager.getHistory());
-                    continue;
-                case 18:
-                    manager = manager.loadFromFile(manager.getPath());
-                    String str = Files.readString(manager.getPath());
-                    String[] strMassiv = str.split("\n");
-                    System.out.println("\nДанные из бэкапа:");
-                    for (String s : strMassiv) {
-                        System.out.println(s);
-                    }
-                    System.out.println("\nДанные из менеджера:");
-                    System.out.println(manager);
-                    System.out.println("\nИстория запросов:");
-                    System.out.println(manager.getHistory());
-            }
-        }
     }
 
-    static int printMenuAndRead(Scanner scanner) {
-        String userInputString;
-        while (true) {
-            System.out.println("Что вы хотите сделать? ");
-            System.out.println("1 - Создать задачу");
-            System.out.println("2 - Создать Эпик");
-            System.out.println("3 - Создать подзадачу");
-            System.out.println("4 - Обновить задачу");
-            System.out.println("5 - Обновить Эпик");
-            System.out.println("6 - Обновить подзадачу");
-            System.out.println("7 - Найти задачу по ID");
-            System.out.println("8 - Найти Эпик по ID");
-            System.out.println("9 - Найти подзадачу по ID");
-            System.out.println("10 - Очистить список задач");
-            System.out.println("11 - Очистить список Эпиков");
-            System.out.println("12 - Очистить список подзадач");
-            System.out.println("13 - Удалить задачу по ID");
-            System.out.println("14 - Удалить Эпик по ID");
-            System.out.println("15 - Удалить подзадачу по ID");
-            System.out.println("16 - Распечатать полный список задач, эпиков и подзадач");
-            System.out.println("17 - Историю запросов");
-            System.out.println("18 - Загрузить из файла файл");
-            System.out.println("exit - Выход");
+    // таски пересекаются по времени
+    public void testPeresechenieTime() {
+        LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 21, 0);
+        Duration duration1 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 22, 30);
+        Duration duration2 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime3 = LocalDateTime.of(2023, 9, 4, 22, 5);
+        Duration duration3 = Duration.ofMinutes(60);
 
-            try {
-                userInputString = scanner.nextLine().trim();
-                if (userInputString.equalsIgnoreCase("exit")) {
-                    return 0;
-                } else {
+        Task task1 = new Task("Test addNewTask1", "Test addNewTask description2", NEW, localDateTime1, duration1);
+        taskManager.newTask(task1);
 
-                    int userInputInt = Integer.parseInt(userInputString);
+        Task task2 = new Task("Test addNewTask2", "Test addNewTask description2", NEW, localDateTime2, duration2);
+        taskManager.newTask(task2);
 
-                    if (userInputInt >= 1 && userInputInt <= 18) {
-                        return userInputInt;
-                    } else {
-                        System.out.println("Не верная команда");
-                    }
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Не верная команда");
-            }
+        Task task3 = new Task("Test addNewTask3", "Test addNewTask description3", NEW, localDateTime3, duration3);
+
+        //-------------------------------------------------------------------------
+        assertThrows(CheckTaskTimeException.class, () -> {
+            taskManager.newTask(task3);
+        });
+        //-------------------------------------------------------------------------
+        // при добавлении вылетает исключение (код из теста)
+        try {
+            taskManager.newTask(task3);
+        } catch (CheckTaskTimeException e) {
+            System.out.println(e.getMessage());
         }
+        //-------------------------------------------------------------------------
+        //меняем время, что бы не было пересечений
+        task2.setStartTime(LocalDateTime.of(2023, 9, 4, 19, 0));
+        taskManager.newTask(task3);
+        System.out.println("\n\nЗадача добавлена:" + taskManager.searchTaskForId(task3.getId()));
+        System.out.println("\n____________________________________________________________________________");
+        System.out.println("\n____________________________________________________________________________");
+
+    }
+
+    public void testEpicTime() {
+        LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 18, 0);
+        Duration duration1 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 12, 0);
+        Duration duration2 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime3 = LocalDateTime.of(2023, 9, 4, 10, 0);
+        Duration duration3 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime4 = LocalDateTime.of(2023, 9, 4, 16, 0);
+        Duration duration4 = Duration.ofMinutes(60);
+
+        Epic epic1 = new Epic("Test addNewEpic1", "Test addNewEpic description2", NEW);
+        int idEpic = taskManager.newEpic(epic1);
+        Subtask subtask1 = new Subtask("Test addNewSubTask1", "Test addNewSubTask description1", NEW,
+                localDateTime1, duration1, idEpic);
+        taskManager.newSubTask(subtask1);
+        Subtask subtask2 = new Subtask("Test addNewSubTask2", "Test addNewSubTask description2", NEW,
+                localDateTime2, duration2, idEpic);
+        taskManager.newSubTask(subtask2);
+        Subtask subtask3 = new Subtask("Test addNewSubTask3", "Test addNewSubTask description3", NEW,
+                localDateTime3, duration3, idEpic);
+        taskManager.newSubTask(subtask3);
+        Subtask subtask4 = new Subtask("Test addNewSubTask4", "Test addNewSubTask description4", NEW,
+                localDateTime4, duration4, idEpic);
+        taskManager.newSubTask(subtask4);
+
+        Duration durationAllSubtask = duration1.plus(duration2).plus(duration3).plus(duration4);
+        System.out.println("\nПродолжительность всех подзадач в минутах: " + durationAllSubtask.toMinutes());
+        System.out.println("Продолжительность эпика в минутах: " + epic1.getDuration().toMinutes());
+
+        System.out.println("\nВремя старта саммой ранней подзадачи :" + localDateTime3);
+        System.out.println("StartTime эпика: " + epic1.getStartTime());
+
+        System.out.println("\nВремя старта саммой поздней подзадачи :" + localDateTime1
+                + " Продолжительность в минтуха: " + duration1.toMinutes());
+        System.out.println("EndTime  эпика: " + epic1.getEndTime());
+
+        //-------------------------------------------------------------------------
+        //меняем время и продолжительность нескольких подзадач
+        localDateTime3 = localDateTime3.plusHours(10);
+        duration3 = duration3.plusHours(2);
+        taskManager.refreshSubTask(new Subtask(subtask3.getId(), "Test addNewSubTask3", "Test addNewSubTask description3", NEW,
+                localDateTime3, duration3, idEpic));
+
+        subtask3 = taskManager.getSubtaskHashMap().get(subtask3.getId());
+        durationAllSubtask = duration1.plus(duration2).plus(duration3).plus(duration4);
+
+        System.out.println("\n____________________________________________________________________________");
+
+        System.out.println("\nПродолжительность всех подзадач в минутах: " + durationAllSubtask.toMinutes());
+        System.out.println("Продолжительность эпика в минутах: " + epic1.getDuration().toMinutes());
+
+        System.out.println("\nВремя старта саммой ранней подзадачи :" + localDateTime2);
+        System.out.println("StartTime эпика: " + epic1.getStartTime());
+
+        System.out.println("\nВремя старта саммой поздней подзадачи :" + localDateTime3
+                + " Продолжительность в минтуха: " + duration3.toMinutes() + " - (3ч)");
+        System.out.println("EndTime  эпика: " + epic1.getEndTime());
+        System.out.println("\n____________________________________________________________________________");
+        System.out.println("\n____________________________________________________________________________");
+    }
+
+    public void tesPprintPrioritizedTasks() {
+        LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 1, 0);
+        Duration duration1 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 2, 0);
+        Duration duration2 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime3 = LocalDateTime.of(2023, 9, 4, 3, 0);
+        Duration duration3 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime4 = LocalDateTime.of(2023, 9, 4, 4, 0);
+        Duration duration4 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime5 = LocalDateTime.of(2023, 9, 4, 5, 0);
+        Duration duration5 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime6 = LocalDateTime.of(2023, 9, 4, 6, 0);
+        Duration duration6 = Duration.ofMinutes(60);
+
+        Epic epic1 = new Epic("Epic", "Test addNewEpic description2", NEW);
+        int idEpic = taskManager.newEpic(epic1);
+
+        Task task1 = new Task("Task1", "Test addNewTask description2", NEW, localDateTime1, duration1);
+        taskManager.newTask(task1);
+        Task task2 = new Task("Task2", "Test addNewTask description2", NEW, localDateTime2, duration2);
+        taskManager.newTask(task2);
+        Task task3 = new Task("Task3", "Test addNewTask description3", NEW, localDateTime3, duration3);
+        taskManager.newTask(task3);
+
+        Subtask subtask4 = new Subtask("SubTask4", "Test addNewSubTask description1", NEW,
+                localDateTime4, duration4, idEpic);
+        taskManager.newSubTask(subtask4);
+        Subtask subtask5 = new Subtask("SubTask5", "Test addNewSubTask description2", NEW,
+                localDateTime5, duration5, idEpic);
+        taskManager.newSubTask(subtask5);
+        Subtask subtask6 = new Subtask("SubTask6", "Test addNewSubTask description3", NEW,
+                localDateTime6, duration6, idEpic);
+        taskManager.newSubTask(subtask6);
+
+        System.out.println("\n____________________________________________________________________________");
+        System.out.println("Вывод задач по приоритету в ручную:");
+        System.out.println(task1.getName() + ": " + task1.getStartTime());
+        System.out.println(task2.getName() + ": " + task2.getStartTime());
+        System.out.println(task3.getName() + ": " + task3.getStartTime());
+        System.out.println(subtask4.getName() + ": " + subtask4.getStartTime());
+        System.out.println(subtask5.getName() + ": " + subtask5.getStartTime());
+        System.out.println(subtask6.getName() + ": " + subtask6.getStartTime());
+
+        System.out.println("\nВывод задач по приоритету через метод:");
+        LinkedList<Task> list = taskManager.getPrioritizedTasks();
+        for (Task task : taskManager.getPrioritizedTasks()) {
+            System.out.println(task.getName() + ": " + task.getStartTime());
+        }
+
+        //-------------------------------------------------------------------------
+        //меняем startTime нескольких подзадач
+        localDateTime3 = localDateTime3.plusHours(5);
+        task3 = new Task(task3.getId(), "Task3", "Test addNewTask description3", NEW, localDateTime3, duration3);
+        taskManager.refreshTask(task3);
+
+        localDateTime5 = localDateTime5.minusHours(5);
+        subtask5 = new Subtask(subtask5.getId(), "Task5", "Test addNewTask description3", NEW, localDateTime5, duration5, idEpic);
+        taskManager.refreshSubTask(subtask5);
+
+        System.out.println("\n____________________________________________________________________________");
+        System.out.println("Вывод задач по приоритету в ручную:");
+        System.out.println(subtask5.getName() + ": " + subtask5.getStartTime());
+        System.out.println(task1.getName() + ": " + task1.getStartTime());
+        System.out.println(task2.getName() + ": " + task2.getStartTime());
+        System.out.println(subtask4.getName() + ": " + subtask4.getStartTime());
+        System.out.println(subtask6.getName() + ": " + subtask6.getStartTime());
+        System.out.println(task3.getName() + ": " + task3.getStartTime());
+
+        System.out.println("\nВывод задач по приоритету через метод:");
+        for (Task task : taskManager.getPrioritizedTasks()) {
+            System.out.println(task.getName() + ": " + task.getStartTime());
+        }
+
+
+        //-------------------------------------------------------------------------
+        //меняем статус task2 на DONE, задачадолжна исчезнуть из списка
+
+        task2 = new Task(task2.getId(), "Task2", "Test addNewTask description3", DONE, localDateTime2, duration2);
+        taskManager.refreshTask(task2);
+
+        localDateTime4 = null;
+        subtask4 = new Subtask(subtask4.getId(), "SubTask4", "Test addNewSubTask description1", NEW,
+                localDateTime4, duration4, idEpic);
+        taskManager.refreshSubTask(subtask4);
+
+
+        System.out.println("\n____________________________________________________________________________");
+        System.out.println("Вывод задач по приоритету в ручную:");
+        System.out.println(subtask5.getName() + ": " + subtask5.getStartTime());
+        System.out.println(task1.getName() + ": " + task1.getStartTime());
+        System.out.println(subtask6.getName() + ": " + subtask6.getStartTime());
+        System.out.println(task3.getName() + ": " + task3.getStartTime());
+        System.out.println(subtask4.getName() + ": " + subtask4.getStartTime());
+
+        System.out.println("\nВывод задач по приоритету через метод:");
+        for (Task task : taskManager.getPrioritizedTasks()) {
+            System.out.println(task.getName() + ": " + task.getStartTime());
+        }
+
     }
 }

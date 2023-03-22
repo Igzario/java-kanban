@@ -1,17 +1,13 @@
-package Tests;
-
-import Managers.FileBackedTasksManager;
-import Managers.Managers;
-import Tasks.Epic;
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
+import managers.FileBackedTasksManager;
+import managers.Managers;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
 import org.junit.jupiter.api.Test;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static Tasks.Status.*;
+import static tasks.Status.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskAndEpicTests {

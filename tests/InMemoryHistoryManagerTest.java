@@ -1,12 +1,11 @@
-package Tests;
-import Managers.InMemoryHistoryManager;
-import Tasks.Task;
+import managers.InMemoryHistoryManager;
+import tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import static Tasks.Status.NEW;
+import static tasks.Status.NEW;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {

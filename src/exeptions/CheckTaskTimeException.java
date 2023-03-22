@@ -1,4 +1,4 @@
-package Exeptions;
+package exeptions;
 
 public class CheckTaskTimeException extends RuntimeException {
 

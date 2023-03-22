@@ -1,14 +1,21 @@
-package Tasks;
+package tasks;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Task {
-
+    @Getter    @Setter
     private int id;
+    @Getter    @Setter
     private String name;
+    @Getter    @Setter
     private String description;
+    @Getter    @Setter
     private Status status;
+    @Getter    @Setter
     private LocalDateTime startTime;
+    @Getter    @Setter
     private Duration duration;
 
 
@@ -24,7 +31,7 @@ public class Task {
         this.duration = duration;
     }
 
-    public Task( String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = discription;
         this.status = status;
@@ -32,54 +39,8 @@ public class Task {
         this.duration = duration;
     }
 
-//
-//    public Task(int id, String name, String discription, Status status) {
-//        this.id = id;
-//        this.name = name;
-//        this.description = discription;
-//        this.status = status;
-//
-//    }
-//    public Task( String name, String discription, Status status) {
-//        this.name = name;
-//        this.description = discription;
-//        this.status = status;
-//    }
-
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndTime() {
         return startTime.plus(duration);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override
@@ -98,21 +59,5 @@ public class Task {
                 .append(", Продолжительность выполнения - ")
                 .append(duration);
         return result.toString();
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
     }
 }

@@ -1,5 +1,5 @@
-package Managers;
-import Tasks.Task;
+package managers;
+import tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,8 +68,8 @@ public class InMemoryHistoryManager implements HistoryManager {
                 } else
                     check = check.next;
             }
-        } else
-            System.out.println("Удаление Node не возможно");
+        }
+
     }
 
     @Override
