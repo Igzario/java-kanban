@@ -17,6 +17,8 @@ public class Task {
     private LocalDateTime startTime;
     @Getter    @Setter
     private Duration duration;
+    @Getter    @Setter
+    private LocalDateTime endTime;
 
 
     public Task() {
@@ -40,7 +42,15 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plus(duration);
+        if (startTime==null || duration ==null)
+        {
+            endTime = null;
+        }
+        else
+        {
+            endTime = startTime.plus(duration);
+        }
+        return endTime;
     }
 
     @Override

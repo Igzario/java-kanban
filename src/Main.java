@@ -4,34 +4,34 @@ import managers.FileBackedTasksManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+
 import static tasks.Status.DONE;
 import static tasks.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-//Переменная будет меняться? - да, в методе загрузки указывается
+// Вот здесь приложение падает с NPE. - у меня нету ошибок...
 
+// Так вот, время окончания нужно, чтобы проследить корректность его расчета. - почему то воспринимал этот файл как бэкап... добавил)
 
-//И нет времени окончания, добавь его. - зачем? это же файл бэкапа, время окончания это рассчетное поле, соответственно
-// и заполнится само...
+// ктстаи поля endTime по тз не предусмотрено, добавил
 
-// Для ссылочных  переменных следует прописывать final.  - head не может быть final
 public class Main {
     static FileBackedTasksManager taskManager = Managers.getDefault();
 
-    public void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         testPeresechenieTime();
         testEpicTime();
         tesPprintPrioritizedTasks();
-
     }
 
     // таски пересекаются по времени
-    public void testPeresechenieTime() {
+    public static void testPeresechenieTime() {
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 21, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 22, 30);
@@ -68,7 +68,7 @@ public class Main {
 
     }
 
-    public void testEpicTime() {
+    public static void testEpicTime() {
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 18, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 12, 0);
@@ -129,7 +129,7 @@ public class Main {
         System.out.println("\n____________________________________________________________________________");
     }
 
-    public void tesPprintPrioritizedTasks() {
+    public static void tesPprintPrioritizedTasks() {
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 1, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 2, 0);

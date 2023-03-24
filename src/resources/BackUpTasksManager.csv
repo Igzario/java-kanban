@@ -1,5 +1,0 @@
-id,type,name,status,description,startTime,duration,epic
-5,task,Test addNewTask1,NEW,Test addNewTask description2,2019-05-09T09:05,PT5H,
-6,task,Test addNewTask2,NEW,Test addNewTask description2,2023-07-25T10:05,PT8H20M,
-
-5,6

@@ -25,7 +25,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public void save() {
         try {
             Writer fileWriter = new FileWriter(path.toString());
-            fileWriter.write("id,type,name,status,description,startTime,duration,epic\n");
+            fileWriter.write("id,type,name,status,description,startTime,duration,endtime,epic\n");
             for (Task task : taskHashMap.values()) {
                 fileWriter.write(toStringChange(task));
             }
@@ -54,7 +54,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         fileBackedTasksManagerFromFile.setPath(file);
         try {
             String str = Files.readString(file);
-            str = str.replace("id,type,name,status,description,startTime,duration,epic\n", "");
+            str = str.replace("id,type,name,status,description,startTime,duration,endtime,epic\n", "");
             String[] strMassiv = str.split("\n");
             for (int i = 0; i < strMassiv.length; i++) {
                 if (!strMassiv[i].equals("")) {
@@ -174,6 +174,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 .append(task.getStartTime())
                 .append(",")
                 .append(task.getDuration())
+                .append(",")
+                .append(task.getEndTime())
                 .append(",")
         ;
         if (task.getClass() == Subtask.class) {
