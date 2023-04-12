@@ -3,6 +3,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Task {
     @Getter    @Setter
@@ -24,21 +25,23 @@ public class Task {
     public Task() {
     }
 
-    public Task(int id, String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
-        this.description = discription;
+        this.description = description;
         this.status = status;
         this.startTime = startTime;
         this.duration = duration;
+        this.endTime = startTime.plus(duration);
     }
 
-    public Task(String name, String discription, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
-        this.description = discription;
+        this.description = description;
         this.status = status;
         this.startTime = startTime;
         this.duration = duration;
+        this.endTime = startTime.plus(duration);
     }
 
     public LocalDateTime getEndTime() {
@@ -56,18 +59,35 @@ public class Task {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("\nID - ")
+        result.append("\nid - ")
                 .append(id)
-                .append(", Название - ")
+                .append(", name - ")
                 .append(name)
-                .append(", Описание  - ")
+                .append(", description  - ")
                 .append(description)
-                .append(", Статус - ")
+                .append(", status - ")
                 .append(status)
-                .append(", Дата старта - ")
+                .append(", startTime - ")
                 .append(startTime)
-                .append(", Продолжительность выполнения - ")
-                .append(duration);
+                .append(", duration - ")
+                .append(duration)
+                .append(", endTime - ")
+                .append(endTime);
         return result.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id
+                && Objects.equals(name, task.name)
+                & Objects.equals(description, task.description)
+                && status == task.status
+                && Objects.equals(startTime, task.startTime)
+                && Objects.equals(duration, task.duration)
+                && Objects.equals(endTime, task.endTime);
+    }
+
 }

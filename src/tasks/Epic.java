@@ -1,27 +1,26 @@
 package tasks;
+
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class Epic extends Task {
     @Getter
     @Setter
-    private ArrayList<Subtask> epicSubTasksList;
-    @Getter
-    @Setter
-    private LocalDateTime endTime;
+    private ArrayList<Subtask> epicSubTasksList = new ArrayList<>();
 
-    public Epic(int id, String name, String discription, Status status) {
+    public Epic(int id, String name, String description, Status status) {
         this.setId(id);
         this.setName(name);
-        this.setDescription(discription);
+        this.setDescription(description);
         this.setStatus(status);
-        this.epicSubTasksList = new ArrayList<>();
-        this.setStartTime(LocalDateTime.MIN);
-        this.endTime = LocalDateTime.MAX;
+        this.setStartTime(LocalDateTime.of(1, 1, 1, 1, 1));
+        this.setEndTime(LocalDateTime.of(999999, 1, 1, 1, 1));
         this.setDuration(Duration.ZERO);
     }
 
@@ -30,8 +29,8 @@ public class Epic extends Task {
         this.setDescription(discription);
         this.setStatus(status);
         this.epicSubTasksList = new ArrayList<>();
-        this.setStartTime(LocalDateTime.MIN);
-        this.endTime = LocalDateTime.MAX;
+        this.setStartTime(LocalDateTime.of(1, 1, 1, 1, 1));
+        this.setEndTime(LocalDateTime.of(999999, 1, 1, 1, 1));
         this.setDuration(Duration.ZERO);
     }
 
@@ -64,13 +63,13 @@ public class Epic extends Task {
                 if (subtask.getStartTime() != null) {
                     testSubTask = subtask;
                 } else {
-                    endTime = LocalDateTime.MAX;
+                    this.setEndTime(LocalDateTime.of(999999, 1, 1, 1, 1));
                 }
             }
-            if (testSubTask.getEndTime() == LocalDateTime.MAX) {
-                endTime = epicSubTasksList.get(epicSubTasksList.size() - 1).getEndTime();
+            if (testSubTask.getEndTime().equals(LocalDateTime.of(999999, 1, 1, 1, 1))) {
+                this.setEndTime(epicSubTasksList.get(epicSubTasksList.size() - 1).getEndTime());
             } else {
-                endTime = testSubTask.getEndTime();
+                this.setEndTime(testSubTask.getEndTime());
             }
             this.setDuration(Duration.ZERO);
             epicSubTasksList.forEach(subtask -> refreshDuration(subtask.getDuration()));
@@ -102,5 +101,49 @@ public class Epic extends Task {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("\nid - ")
+                .append(this.getId())
+                .append(", name - ")
+                .append(this.getName())
+                .append(", description  - ")
+                .append(this.getDescription())
+                .append(", status - ")
+                .append(this.getStatus())
+                .append(", startTime - ")
+                .append(this.getStartTime())
+                .append(", duration - ")
+                .append(this.getDuration())
+                .append(", endTime - ")
+                .append(this.getEndTime());
+        return result.toString();
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Epic epic = (Epic) o;
+        boolean ok = false;
+        if (this.getId() == epic.getId() && this.getName().equals(epic.getName())
+                && this.getDescription().equals(epic.getDescription())
+                && this.getStatus() == epic.getStatus()) {
+            if (epicSubTasksList.size() == 0 && epic.epicSubTasksList.size() == 0) {
+                return true;
+            } else if (epicSubTasksList.size() == epic.epicSubTasksList.size()) {
+                for (Subtask subtask : epicSubTasksList) {
+                    for (Subtask subtaskO : epic.getEpicSubTasksList()) {
+                        if (subtask.equals(subtaskO)) {
+                            ok = true;
+                        }
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        return ok;
+    }
 }

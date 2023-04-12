@@ -1,37 +1,128 @@
-import exeptions.CheckTaskTimeException;
-import managers.Managers;
-import managers.FileBackedTasksManager;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import managers.*;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import exeptions.CheckTaskTimeException;
+import managers.Managers;
 import java.util.LinkedList;
-
 import static tasks.Status.DONE;
 import static tasks.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-// Вот здесь приложение падает с NPE. - у меня нету ошибок...
-
-// Так вот, время окончания нужно, чтобы проследить корректность его расчета. - почему то воспринимал этот файл как бэкап... добавил)
-
-// ктстаи поля endTime по тз не предусмотрено, добавил
-
 public class Main {
-    static FileBackedTasksManager taskManager = Managers.getDefault();
+    private static HttpTaskManager taskManager;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        testKVServer();
+    }
 
-        testPeresechenieTime();
-        testEpicTime();
-        tesPprintPrioritizedTasks();
+    public static void testKVServer() throws IOException, InterruptedException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+        taskManager = Managers.getHttpTaskManager();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateAdapter());
+        gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
+
+        LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 21, 0);
+        Duration duration1 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime2 = LocalDateTime.of(2023, 8, 4, 22, 30);
+        Duration duration2 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime3 = LocalDateTime.of(2023, 10, 4, 22, 5);
+        Duration duration3 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime4 = LocalDateTime.of(2023, 9, 2, 21, 0);
+        Duration duration4 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime5 = LocalDateTime.of(2023, 8, 3, 22, 30);
+        Duration duration5 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime6 = LocalDateTime.of(2023, 10, 9, 22, 5);
+        Duration duration6 = Duration.ofMinutes(60);
+        LocalDateTime localDateTime7 = LocalDateTime.of(2023, 10, 1, 22, 5);
+        Duration duration7 = Duration.ofMinutes(60);
+
+        Task task1 = new Task("Test addNewTask1", "Test addNewTask description2", NEW, localDateTime1, duration1);
+        Task task2 = new Task("Test addNewTask2", "Test addNewTask description2", NEW, localDateTime2, duration2);
+        Task task3 = new Task("Test addNewTask3", "Test addNewTask description3", NEW, localDateTime3, duration3);
+        Epic epic1 = new Epic("Test addNewEpic1", "Test addNewEpic description2", NEW);
+        int idEpic = taskManager.newEpic(epic1);
+        Subtask subtask1 = new Subtask("Test addNewSubTask1", "Test addNewSubTask description1", NEW,
+                localDateTime4, duration4, idEpic);
+        taskManager.newSubTask(subtask1);
+        Subtask subtask2 = new Subtask("Test addNewSubTask2", "Test addNewSubTask description2", NEW,
+                localDateTime5, duration5, idEpic);
+        taskManager.newSubTask(subtask2);
+        Subtask subtask3 = new Subtask("Test addNewSubTask3", "Test addNewSubTask description3", NEW,
+                localDateTime6, duration6, idEpic);
+        taskManager.newSubTask(subtask3);
+        Subtask subtask4 = new Subtask("Test addNewSubTask4", "Test addNewSubTask description4", NEW,
+                localDateTime7, duration7, idEpic);
+        taskManager.newSubTask(subtask4);
+
+        taskManager.newTask(task1);
+        taskManager.newTask(task2);
+        taskManager.newTask(task3);
+        taskManager.searchTaskForId(7);
+        taskManager.searchTaskForId(8);
+        taskManager.searchTaskForId(6);
+        taskManager.searchEpicForId(1);
+        taskManager.searchSubtaskForId(2);
+        taskManager.searchSubtaskForId(4);
+        taskManager.searchSubtaskForId(3);
+        System.out.println("=============BEFORE-LOAD==============");
+        System.out.println(taskManager);
+        System.out.println("=============HISTORY-BEFORE-LOAD==============");
+        System.out.println(taskManager.getHistory());
+        System.out.println("===========================");
+        HttpTaskManager httpTaskManagerAfterLoad = taskManager.load();
+        System.out.println("===========================");
+        System.out.println("=============AFTER-LOAD==============");
+        System.out.println(httpTaskManagerAfterLoad);
+        System.out.println("=============HISTORY-AFTER-LOAD==============");
+        System.out.println(httpTaskManagerAfterLoad.getHistory());
+        kvServer.stop();
+    }
+
+    //Адаптер для Duration в минутах
+    static class DurationAdapter extends TypeAdapter<Duration> {
+        @Override
+        public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
+            jsonWriter.value(duration.toMinutes());
+        }
+
+        @Override
+        public Duration read(JsonReader jsonReader) throws IOException {
+            String str = jsonReader.nextString();
+            return Duration.ofMinutes(Long.parseLong(str));
+        }
+    }
+
+    //Адаптер для LocalDateTime
+    static class LocalDateAdapter extends TypeAdapter<LocalDateTime> {
+        private static final DateTimeFormatter formatterWriter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        private static final DateTimeFormatter formatterReader = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+        @Override
+        public void write(final JsonWriter jsonWriter, final LocalDateTime localDate) throws IOException {
+            jsonWriter.value(localDate.format(formatterWriter));
+        }
+
+        @Override
+        public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+            return LocalDateTime.parse(jsonReader.nextString(), formatterReader);
+        }
+
     }
 
     // таски пересекаются по времени
-    public static void testPeresechenieTime() {
+    public static void testPeresechenieTime() throws IOException, InterruptedException {
+        taskManager = Managers.getHttpTaskManager();
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 21, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 22, 30);
@@ -68,7 +159,8 @@ public class Main {
 
     }
 
-    public static void testEpicTime() {
+    public static void testEpicTime() throws IOException, InterruptedException {
+        taskManager = Managers.getHttpTaskManager();
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 18, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 12, 0);
@@ -129,7 +221,8 @@ public class Main {
         System.out.println("\n____________________________________________________________________________");
     }
 
-    public static void tesPprintPrioritizedTasks() {
+    public static void tesPprintPrioritizedTasks() throws IOException, InterruptedException {
+        taskManager = Managers.getHttpTaskManager();
         LocalDateTime localDateTime1 = LocalDateTime.of(2023, 9, 4, 1, 0);
         Duration duration1 = Duration.ofMinutes(60);
         LocalDateTime localDateTime2 = LocalDateTime.of(2023, 9, 4, 2, 0);

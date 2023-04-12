@@ -1,4 +1,5 @@
 package managers;
+
 import exeptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Status;
@@ -6,6 +7,7 @@ import tasks.Subtask;
 import tasks.Task;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -13,18 +15,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
-    @Getter    @Setter
+    @Getter
+    @Setter
     private Path path;
 
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
 
+    public FileBackedTasksManager() {
+    }
+
+
     public void save() {
         try {
-            Writer fileWriter = new FileWriter(path.toString());
+            Writer fileWriter = new FileWriter(this.path.toString());
             fileWriter.write("id,type,name,status,description,startTime,duration,endtime,epic\n");
             for (Task task : taskHashMap.values()) {
                 fileWriter.write(toStringChange(task));
@@ -186,8 +194,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return stringBuilder.toString();
     }
 
-    public void clearHistory(){
-        for (Task task : getHistory()){
+    public void clearHistory() {
+        for (Task task : getHistory()) {
             historyManager.remove(task.getId());
         }
     }
@@ -222,7 +230,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         idTasks++;
         subtask.setId(id);
         subtaskHashMap.put(id, subtask);
-        epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        if (epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList() == null) {
+            ArrayList<Subtask> list = new ArrayList<>();
+            list.add(subtask);
+            epicHashMap.get(subtask.getIdEpic()).setEpicSubTasksList(list);
+        } else {
+            epicHashMap.get(subtask.getIdEpic()).getEpicSubTasksList().add(subtask);
+        }
         epicHashMap.get(subtask.getIdEpic()).refreshStatusAndTime();
         sortedTasksTreeSet.add(subtask);
         prioritizedTasks(subtask);
@@ -345,7 +359,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     return false;
                 }
                 if (task.getId() == testTask.getId()) {
-                    isOk=true;
+                    isOk = true;
                 }
                 if (!isOk) {
                     return false;
