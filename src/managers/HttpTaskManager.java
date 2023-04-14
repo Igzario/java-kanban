@@ -1,14 +1,19 @@
 package managers;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import lombok.Getter;
+import lombok.Setter;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
@@ -18,15 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HttpTaskManager extends FileBackedTasksManager {
-    URL url;
-    KVTaskClient kvTaskClient;
-    GsonBuilder gsonBuilder;
-    Gson gson;
+    private final KVTaskClient kvTaskClient;
+    private final Gson gson;
 
     public HttpTaskManager(URL url) throws IOException, InterruptedException {
-        this.url = url;
         this.kvTaskClient = new KVTaskClient(url);
-        gsonBuilder = new GsonBuilder();
+        GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateAdapter());
         gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
         gson = gsonBuilder.create();
@@ -34,10 +36,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     public void save() {
         try {
-            kvTaskClient.put("tasks:", gson.toJson(taskHashMap));
-            kvTaskClient.put("epics:", gson.toJson(epicHashMap));
-            kvTaskClient.put("subtasks:", gson.toJson(subtaskHashMap));
-            kvTaskClient.put("history:", gson.toJson(getHistory()));
+            kvTaskClient.put("tasks", gson.toJson(taskHashMap));
+            kvTaskClient.put("epics", gson.toJson(epicHashMap));
+            kvTaskClient.put("subtasks", gson.toJson(subtaskHashMap));
+            kvTaskClient.put("history", gson.toJson(getHistory()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,9 +49,9 @@ public class HttpTaskManager extends FileBackedTasksManager {
         int idTasks = 1;
 
         HttpTaskManager manager = Managers.getHttpTaskManager();
-        String tasks = kvTaskClient.load("tasks:");
-        String epics = kvTaskClient.load("epics:");
-        String history = kvTaskClient.load("history:");
+        String tasks = kvTaskClient.load("tasks");
+        String epics = kvTaskClient.load("epics");
+        String history = kvTaskClient.load("history");
 
         HashMap<Integer, LinkedTreeMap> tasksHash = (gson.fromJson(tasks, HashMap.class));
         HashMap<Integer, LinkedTreeMap> epicsHash = (gson.fromJson(epics, HashMap.class));
@@ -138,6 +140,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
             jsonWriter.value(duration.toMinutes());
         }
+
         @Override
         public Duration read(JsonReader jsonReader) throws IOException {
             String str = jsonReader.nextString();
@@ -151,7 +154,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
         @Override
         public void write(final JsonWriter jsonWriter, final LocalDateTime localDate) throws IOException {
-            jsonWriter.value(localDate.format(formatter));
+            if (localDate != null)
+                jsonWriter.value(localDate.format(formatter));
+            else
+                jsonWriter.nullValue();
         }
 
         @Override

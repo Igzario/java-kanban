@@ -1,7 +1,6 @@
 package managers;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,22 +9,22 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.net.URL;
+
 import static java.net.URI.create;
 
 public class KVTaskClient {
     @Getter
     private final long API_TOKEN;
     private URI URI;
-    private URL URL;
-    HttpRequest.Builder requestBuilder;
-    HttpClient client;
-    HttpRequest request;
-    HttpResponse.BodyHandler<String> handler;
+    private final URL URL;
+    private HttpRequest.Builder requestBuilder;
+    private HttpClient client;
+    private HttpRequest request;
+    private HttpResponse.BodyHandler<String> handler;
 
     public KVTaskClient(URL url) throws IOException, InterruptedException {
         this.URL = url;
-        this.URI = create(url+"/register");
+        this.URI = create(url + "/register");
         client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
         requestBuilder = HttpRequest.newBuilder();
 
@@ -44,20 +43,19 @@ public class KVTaskClient {
     }
 
     public void put(String key, String json) throws IOException, InterruptedException {
-        URI=create(URL+"/save/"+key+"?API_TOKEN="+API_TOKEN);
+        URI = create(URL + "/save/" + key + "?API_TOKEN=" + API_TOKEN);
         request = requestBuilder
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .uri(URI)
                 .version(HttpClient.Version.HTTP_1_1)
                 .header("Accept", "text/html")
                 .build();
-       client.send(request, handler);
+        client.send(request, handler);
     }
 
 
-
     String load(String key) throws IOException, InterruptedException {
-        URI=create(URL+"/load/"+key+"?API_TOKEN="+API_TOKEN);
+        URI = create(URL + "/load/" + key + "?API_TOKEN=" + API_TOKEN);
         request = requestBuilder
                 .GET()
                 .uri(URI)
@@ -68,7 +66,6 @@ public class KVTaskClient {
 
         return response.body();
     }
-
 
 
 }

@@ -1,24 +1,32 @@
 package tasks;
+
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    @Getter    @Setter
+    @Getter
+    @Setter
     private int id;
-    @Getter    @Setter
+    @Getter
+    @Setter
     private String name;
-    @Getter    @Setter
+    @Getter
+    @Setter
     private String description;
-    @Getter    @Setter
+    @Getter
+    @Setter
     private Status status;
-    @Getter    @Setter
+    @Getter
+    @Setter
     private LocalDateTime startTime;
-    @Getter    @Setter
+    @Getter
+    @Setter
     private Duration duration;
-    @Getter    @Setter
+    @Setter
     private LocalDateTime endTime;
 
 
@@ -45,12 +53,9 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime==null || duration ==null)
-        {
+        if (startTime == null || duration == null) {
             endTime = null;
-        }
-        else
-        {
+        } else {
             endTime = startTime.plus(duration);
         }
         return endTime;
@@ -71,7 +76,7 @@ public class Task {
                 .append(startTime)
                 .append(", duration - ")
                 .append(duration)
-                .append(", endTime - ")
+                .append(", endTimeEpic - ")
                 .append(endTime);
         return result.toString();
     }

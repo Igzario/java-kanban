@@ -4,12 +4,15 @@ import com.google.gson.internal.LinkedTreeMap;
 import managers.FileBackedTasksManager;
 import managers.HttpTaskServer;
 import managers.Managers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,7 +33,7 @@ class HttpTaskServerTest {
     HttpClient client;
 
     @BeforeEach
-    public void startServer() throws IOException, InterruptedException {
+    public void startServer() throws IOException {
         server = new HttpTaskServer();
         server.srart();
         gsonBuilder = new GsonBuilder();
@@ -38,6 +41,11 @@ class HttpTaskServerTest {
         gsonBuilder.registerTypeAdapter(Duration.class, new HttpTaskServer.DurationAdapter());
         gson = gsonBuilder.create();
         client = HttpClient.newHttpClient();
+    }
+
+    @AfterEach
+    public void stopServer() {
+        server.stop();
     }
 
     @Test

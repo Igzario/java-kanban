@@ -1,4 +1,5 @@
 package managers;
+
 import exeptions.CheckTaskTimeException;
 import tasks.Epic;
 import tasks.Status;
@@ -6,29 +7,31 @@ import tasks.Subtask;
 import tasks.Task;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    @Getter @Setter
+    @Getter
+    @Setter
     protected HashMap<Integer, Epic> epicHashMap = new HashMap<>();
-    @Getter @Setter
+    @Getter
+    @Setter
     protected HashMap<Integer, Subtask> subtaskHashMap = new HashMap<>();
-    @Getter @Setter
+    @Getter
+    @Setter
     protected HashMap<Integer, Task> taskHashMap = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected int idTasks = 1;
 
     Comparator comparator = (o1, o2) -> {
-        if ( ((Task) o1).getStartTime() == null)
+        if (((Task) o1).getStartTime() == null)
             return 1;
         else {
             if (((Task) o1).getStartTime().isAfter(((Task) o2).getStartTime())) {
                 return 1;
-            }
-            else if (((Task) o1).getStartTime().isBefore(((Task) o2).getStartTime())) {
+            } else if (((Task) o1).getStartTime().isBefore(((Task) o2).getStartTime())) {
                 return -1;
-            }
-            else
+            } else
                 return 0;
         }
     };
@@ -254,16 +257,16 @@ public class InMemoryTaskManager implements TaskManager {
         return sortedTasksList;
     }
 
-    public void prioritizedTasks(Task task){
+    public void prioritizedTasks(Task task) {
         if (task.getStatus() == Status.DONE) {
             sortedTasksTreeSet.remove(task);
             sortedTasksList.clear();
             sortedTasksList.addAll(sortedTasksTreeSet);
 
         } else {
-                sortedTasksTreeSet.add(task);
-                sortedTasksList.clear();
-                sortedTasksList.addAll(sortedTasksTreeSet);
+            sortedTasksTreeSet.add(task);
+            sortedTasksList.clear();
+            sortedTasksList.addAll(sortedTasksTreeSet);
         }
     }
 

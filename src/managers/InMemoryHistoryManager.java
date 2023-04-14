@@ -1,5 +1,7 @@
 package managers;
+
 import tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +26,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        if (head !=null && head.data != null) {
+        if (head != null && head.data != null) {
             Node check = head;
             for (int i = 0; i < size; i++) {
                 if (check.data != null && check.next != null) {
@@ -93,15 +95,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         removeNode(hashHistory.get(id));
         hashHistory.remove(id);
-        if (size==0)
-        {
-            head =null;
+        if (size == 0) {
+            head = null;
         }
     }
 
     @Override
     public List<Task> getHistory() {
-            return getTasks();
+        return getTasks();
     }
 
     @Override

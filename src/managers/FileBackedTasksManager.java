@@ -111,15 +111,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 switch (split[3]) {
                     case "NEW":
                         task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.NEW,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[8]));
                         break;
                     case "IN_PROGRESS":
                         task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.IN_PROGRESS,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[8]));
                         break;
                     case "DONE":
                         task = new Subtask(Integer.parseInt(split[0]), split[2], split[4], Status.DONE,
-                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[7]));
+                                LocalDateTime.parse(split[5]), Duration.parse(split[6]), Integer.parseInt(split[8]));
                 }
                 break;
             case "task":

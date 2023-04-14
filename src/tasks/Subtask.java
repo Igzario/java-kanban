@@ -1,13 +1,15 @@
 package tasks;
+
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Subtask extends Task {
-@Getter @Setter
-    private int idEpic ;
+    @Getter
+    @Setter
+    private int idEpic;
 
     public Subtask(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration, int idEpic) {
         super(id, name, description, status, startTime, duration);

@@ -24,20 +24,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class HttpTaskServer {
-
-    HttpServer httpServer;
+    private final HttpServer httpServer;
     private static final int PORT = 8080;
     @Getter
     @Setter
-    FileBackedTasksManager manager;
-    Gson gson;
-    GsonBuilder gsonBuilder;
+    private FileBackedTasksManager manager;
+    private final Gson gson;
 
-    public HttpTaskServer() throws IOException, InterruptedException {
+    public HttpTaskServer() throws IOException {
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         this.manager = Managers.getDefault();
-        gsonBuilder = new GsonBuilder();
+        GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateAdapter());
         gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
         gson = gsonBuilder.create();
@@ -50,7 +48,7 @@ public class HttpTaskServer {
     //  /tasks/task
     public class taskHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
+        public void handle(HttpExchange httpExchange) {
             try {
                 String requestMethod = httpExchange.getRequestMethod();
                 String query = httpExchange.getRequestURI().getQuery();
@@ -118,7 +116,7 @@ public class HttpTaskServer {
 
     public class epicHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
+        public void handle(HttpExchange httpExchange) {
             try {
                 String requestMethod = httpExchange.getRequestMethod();
                 String query = httpExchange.getRequestURI().getQuery();
@@ -186,7 +184,7 @@ public class HttpTaskServer {
 
     public class subTaskHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
+        public void handle(HttpExchange httpExchange) {
             try {
                 String requestMethod = httpExchange.getRequestMethod();
                 String query = httpExchange.getRequestURI().getQuery();
@@ -298,17 +296,20 @@ public class HttpTaskServer {
 
     //Адаптер для LocalDateTime
     public static class LocalDateAdapter extends TypeAdapter<LocalDateTime> {
-        private static final DateTimeFormatter formatterWriter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        private static final DateTimeFormatter formatterReader = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
 
         @Override
         public void write(final JsonWriter jsonWriter, final LocalDateTime localDate) throws IOException {
-            jsonWriter.value(localDate.format(formatterWriter));
+            if (localDate != null)
+                jsonWriter.value(localDate.format(formatter));
+            else
+                jsonWriter.nullValue();
         }
 
         @Override
         public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-            return LocalDateTime.parse(jsonReader.nextString(), formatterReader);
+            return LocalDateTime.parse(jsonReader.nextString(), formatter);
         }
 
     }

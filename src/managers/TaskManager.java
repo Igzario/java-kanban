@@ -1,4 +1,5 @@
 package managers;
+
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -47,7 +48,7 @@ public interface TaskManager {
 
     ArrayList<Subtask> getSubTasksForEpicId(int idEpic);
 
-    LinkedList<Task>  getPrioritizedTasks();
+    LinkedList<Task> getPrioritizedTasks();
 
     void checkTaskTime(Task task);
 }
